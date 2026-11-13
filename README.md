@@ -21,6 +21,6 @@ La carpeta data pertenece EXCLUSIVAMENTE a este proyecto.
 No copiar la carpeta .idea ni target desde otro proyecto.
 
 Administrador:
-contraseña: 123
+contraseña: ***
 
-El login de administrador redirige automaticamente a /admin/inicioAdmin al introducir 123.
+El login de administrador redirige automaticamente a /admin/inicioAdmin al introducir ***.
