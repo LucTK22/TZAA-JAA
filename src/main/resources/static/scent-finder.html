@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f0efec">
+    <title>Scent Finder | TZAA JAA!</title>
+    <link rel="stylesheet" href="css/publico.css?v=20261103idiomas">
+</head>
+<body class="scent-finder-page">
+<header class="scent-finder-page__nav">
+    <a class="scent-finder-page__brand" href="/">TZAA JAA!</a>
+    <span class="scent-finder-page__nav-caption">PERFUMERÍA DE AUTOR</span>
+    <div class="scent-finder-page__nav-actions">
+        <nav class="selector-idioma selector-idioma--finder" aria-label="Idioma / Language / 言語">
+            <button type="button" data-idioma="es" aria-label="Español">ES</button>
+            <button type="button" data-idioma="en" aria-label="English">EN</button>
+            <button type="button" data-idioma="ja" aria-label="日本語">日本語</button>
+        </nav>
+        <a href="/" data-texto-es="VOLVER A LA TIENDA">VOLVER A LA TIENDA</a>
+    </div>
+</header>
+
+<main class="scent-finder-page__stage" id="scent-finder-stage">
+    <canvas class="scent-finder-page__liquid-canvas" id="scent-finder-liquid" aria-hidden="true"></canvas>
+
+    <section class="scent-finder-page__content" id="scent-finder-intro" aria-labelledby="scent-finder-title">
+        <span class="scent-finder-page__eyebrow">TZAA JAA! · DESCUBRIMIENTO OLFATIVO</span>
+        <h1 id="scent-finder-title">SCENT FINDER</h1>
+        <p>Cinco preguntas para encontrar la fragancia que encaja contigo.</p>
+        <button class="scent-finder-page__back" id="scent-finder-begin" type="button">COMENZAR</button>
+    </section>
+
+    <section class="scent-finder-page__content scent-finder-quiz" id="scent-finder-quiz" aria-live="polite" hidden>
+        <div class="scent-finder-quiz__progress-copy">
+            <span id="scent-finder-step-label">PREGUNTA 1 DE 5</span>
+            <span id="scent-finder-progress-percent">20 %</span>
+        </div>
+        <div class="scent-finder-quiz__progress-track" role="progressbar" aria-label="Progreso del cuestionario" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1">
+            <span id="scent-finder-progress-fill"></span>
+        </div>
+        <span class="scent-finder-page__eyebrow">TU PERFIL OLFATIVO</span>
+        <h1 class="scent-finder-quiz__title" id="scent-finder-question"></h1>
+        <p class="scent-finder-quiz__subtitle" id="scent-finder-question-hint"></p>
+        <div class="scent-finder-quiz__options" id="scent-finder-options"></div>
+        <p class="scent-finder-quiz__error" id="scent-finder-error" role="status" hidden>Selecciona una respuesta para continuar.</p>
+        <div class="scent-finder-quiz__controls">
+            <button class="scent-finder-quiz__previous" id="scent-finder-previous" type="button">← ANTERIOR</button>
+            <button class="scent-finder-page__back scent-finder-quiz__next" id="scent-finder-next" type="button" disabled>SIGUIENTE</button>
+        </div>
+    </section>
+
+    <section class="scent-finder-page__content scent-finder-results" id="scent-finder-results" aria-live="polite" hidden>
+        <span class="scent-finder-page__eyebrow">TU SELECCIÓN · NUESTRA RECOMENDACIÓN</span>
+        <h1 class="scent-finder-results__title">TU HUELLA OLFATIVA</h1>
+        <div class="scent-finder-results__grid" id="scent-finder-results-grid"></div>
+        <p class="scent-finder-results__error" id="scent-finder-results-error" role="status" hidden></p>
+        <div class="scent-finder-quiz__controls scent-finder-results__controls">
+            <button class="scent-finder-quiz__previous" id="scent-finder-results-previous" type="button">← REVISAR RESPUESTAS</button>
+            <button class="scent-finder-page__back" id="scent-finder-restart" type="button">VOLVER A EMPEZAR</button>
+        </div>
+    </section>
+</main>
+
+<script>
+    // Cinco preguntas cortas para ordenar las fragancias por afinidad con las respuestas.
+    (() => {
+        const preguntas = [
+            {
+                key: "destinatario",
+                title: "¿Para quién buscas el perfume?",
+                hint: "La mayoría de nuestra colección es unisex; esta respuesta orienta la selección sin excluir esas fragancias.",
+                options: [
+                    {value: "yo", title: "Para mí", detail: "Quiero encontrar mi próxima fragancia."},
+                    {value: "regalo-mujer", title: "Para ella", detail: ""},
+                    {value: "regalo-hombre", title: "Para él", detail: ""},
+                    {value: "unisex", title: "Unisex", detail: ""}
+                ]
+            },
+            {
+                key: "familia",
+                title: "¿Qué familia olfativa te atrae más?",
+                hint: "Elige la que más te apetece llevar, aunque no conozcas todas sus notas.",
+                options: [
+                    {value: "ambar", title: "Ámbar y cálida", detail: "Dorada, envolvente y con un punto dulce."},
+                    {value: "floral", title: "Floral", detail: "Elegante, luminosa y con carácter."},
+                    {value: "oud", title: "Maderas y oud", detail: "Profunda, sofisticada y misteriosa."},
+                    {value: "dulce", title: "Dulce y almizclada", detail: "Suave, sensual y reconfortante."}
+                ]
+            },
+            {
+                key: "sensacion",
+                title: "¿Qué sensación quieres transmitir?",
+                hint: "Piensa en cómo quieres sentirte cuando lleves el perfume.",
+                options: [
+                    {value: "elegante", title: "Luminosa y elegante", detail: "Una presencia refinada que se hace notar."},
+                    {value: "calida", title: "Cálida y acogedora", detail: "Una fragancia que envuelve como un abrazo."},
+                    {value: "sensual", title: "Sensual", detail: "Un aroma íntimo, seductor y memorable."},
+                    {value: "misteriosa", title: "Misteriosa", detail: "Profundidad, contraste y mucha personalidad."}
+                ]
+            },
+            {
+                key: "intensidad",
+                title: "¿Qué intensidad prefieres?",
+                hint: "No hay una opción mejor: depende de la presencia que te guste.",
+                options: [
+                    {value: "suave", title: "Suave", detail: "Cercana y discreta."},
+                    {value: "equilibrada", title: "Equilibrada", detail: "Se percibe sin dominar el espacio."},
+                    {value: "intensa", title: "Intensa", detail: "Con una estela que deja recuerdo."}
+                ]
+            },
+            {
+                key: "momento",
+                title: "¿Cuándo lo usarías más?",
+                hint: "Así podemos priorizar perfumes que encajen con tu día a día.",
+                options: [
+                    {value: "diario", title: "En el día a día", detail: "Para acompañarme a menudo."},
+                    {value: "noche", title: "Por la noche", detail: "Para planes y momentos especiales."},
+                    {value: "especial", title: "En ocasiones especiales", detail: "Quiero reservarlo para ocasiones únicas."},
+                    {value: "versatil", title: "Un poco para todo", detail: "Busco mi fragancia de cabecera."}
+                ]
+            }
+        ];
+
+        // Perfiles iniciales basados en las descripciones de los perfumes de la tienda.
+        const perfiles = [
+            {match: n => n === "baccarat rouge 540", familias: ["floral", "oud"], sensaciones: ["elegante", "misteriosa"], intensidad: ["equilibrada", "intensa"], momentos: ["noche", "especial", "versatil"], descripcion: "Un perfil floral y amaderado, elegante y con presencia."},
+            {match: n => n.includes("baccarat rouge 540") && (n.includes("eau de parfum") || n.includes("edp")), familias: ["floral", "oud", "dulce"], sensaciones: ["elegante", "calida"], intensidad: ["suave", "equilibrada"], momentos: ["diario", "especial", "versatil"], descripcion: "Una combinación floral y amaderada de carácter refinado."},
+            {match: n => n === "grand soir", familias: ["ambar", "dulce"], sensaciones: ["calida", "sensual", "misteriosa"], intensidad: ["equilibrada", "intensa"], momentos: ["noche", "especial"], descripcion: "Un acorde oriental ambarado, cálido y envolvente."},
+            {match: n => n === "oud satin mood", familias: ["oud", "floral", "dulce"], sensaciones: ["calida", "sensual", "misteriosa"], intensidad: ["equilibrada", "intensa"], momentos: ["noche", "especial", "versatil"], descripcion: "Oud, rosa y vainilla en una composición sensual y envolvente."},
+            {match: n => n === "oud satin mood extrait", familias: ["oud", "ambar", "floral"], sensaciones: ["sensual", "misteriosa"], intensidad: ["intensa"], momentos: ["noche", "especial"], descripcion: "Una interpretación profunda e intensa de oud, rosa y acordes ambarados."},
+            {match: n => n === "gentle fluidity gold", familias: ["ambar", "floral", "dulce"], sensaciones: ["elegante", "calida"], intensidad: ["suave", "equilibrada"], momentos: ["diario", "versatil"], descripcion: "Vainilla y almizcle en un perfil luminoso, cálido y versátil."},
+            {match: n => n === "absolue pour le soir", familias: ["ambar", "dulce"], sensaciones: ["sensual", "misteriosa", "calida"], intensidad: ["intensa"], momentos: ["noche", "especial"], descripcion: "Un carácter ambarado, profundo y pensado para la noche."},
+            {match: n => n.includes("reflets") && n.includes("ambre"), familias: ["ambar", "floral"], sensaciones: ["elegante", "calida"], intensidad: ["suave", "equilibrada"], momentos: ["diario", "versatil", "especial"], descripcion: "Una faceta ambarada y luminosa, fácil de llevar en distintos momentos."}
+        ];
+
+        const intro = document.getElementById("scent-finder-intro");
+        const quiz = document.getElementById("scent-finder-quiz");
+        const results = document.getElementById("scent-finder-results");
+        const questionTitle = document.getElementById("scent-finder-question");
+        const questionHint = document.getElementById("scent-finder-question-hint");
+        const optionsContainer = document.getElementById("scent-finder-options");
+        const previousButton = document.getElementById("scent-finder-previous");
+        const nextButton = document.getElementById("scent-finder-next");
+        const errorMessage = document.getElementById("scent-finder-error");
+        const resultGrid = document.getElementById("scent-finder-results-grid");
+        const resultError = document.getElementById("scent-finder-results-error");
+        const selectedAnswers = {};
+        let currentStep = 0;
+        let perfumeCatalog = [];
+
+        const normalizar = value => String(value || "")
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[’']/g, "").toLowerCase().trim();
+
+        function propiedad(objeto, nombre) {
+            const clave = Object.keys(objeto || {}).find(k => normalizar(k) === normalizar(nombre));
+            return clave ? objeto[clave] : "";
+        }
+
+        function escaparHTML(valor) {
+            return String(valor == null ? "" : valor).replace(/[&<>"']/g, caracter => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+            })[caracter]);
+        }
+
+        function mostrarPaso() {
+            const pregunta = preguntas[currentStep];
+            const respuesta = selectedAnswers[pregunta.key];
+            const avance = Math.round(((currentStep + 1) / preguntas.length) * 100);
+            document.getElementById("scent-finder-step-label").textContent = `PREGUNTA ${currentStep + 1} DE ${preguntas.length}`;
+            document.getElementById("scent-finder-progress-percent").textContent = `${avance} %`;
+            document.querySelector(".scent-finder-quiz__progress-track").setAttribute("aria-valuenow", String(currentStep + 1));
+            document.getElementById("scent-finder-progress-fill").style.width = `${avance}%`;
+            questionTitle.textContent = pregunta.title;
+            questionHint.textContent = pregunta.hint;
+            errorMessage.hidden = true;
+            previousButton.disabled = currentStep === 0;
+            previousButton.textContent = "←";
+            previousButton.setAttribute("aria-label", "Pregunta anterior");
+            nextButton.textContent = currentStep === preguntas.length - 1 ? "VER PERFUMES →" : "CONTINUAR →";
+            nextButton.disabled = !respuesta;
+            optionsContainer.innerHTML = pregunta.options.map(opcion => `
+                <button class="scent-finder-option${respuesta === opcion.value ? " is-selected" : ""}" type="button" data-value="${escaparHTML(opcion.value)}" aria-pressed="${respuesta === opcion.value}">
+                    <span class="scent-finder-option__title">${escaparHTML(opcion.title)}</span>
+                    <span class="scent-finder-option__detail">${escaparHTML(opcion.detail)}</span>
+                    <span class="scent-finder-option__mark" aria-hidden="true"></span>
+                </button>
+            `).join("");
+
+            optionsContainer.querySelectorAll(".scent-finder-option").forEach(button => {
+                button.addEventListener("click", () => {
+                    selectedAnswers[pregunta.key] = button.dataset.value;
+                    mostrarPaso();
+                });
+            });
+        }
+
+        function perfilDe(perfume) {
+            const nombre = normalizar(propiedad(perfume, "NOMBRE"));
+            const perfil = perfiles.find(item => item.match(nombre));
+            if (perfil) return perfil;
+
+            const genero = normalizar(propiedad(perfume, "GENERO"));
+            return {
+                familias: ["ambar", "floral", "oud", "dulce"],
+                sensaciones: ["elegante", "calida", "sensual", "misteriosa"],
+                intensidad: ["equilibrada"],
+                momentos: ["versatil"],
+                genero,
+                descripcion: "Una fragancia de nuestra selección de autor, elegida para explorar tu perfil."
+            };
+        }
+
+        function puntuar(perfume) {
+            const perfil = perfilDe(perfume);
+            let puntos = 0;
+            if (perfil.familias.includes(selectedAnswers.familia)) puntos += 4;
+            if (perfil.sensaciones.includes(selectedAnswers.sensacion)) puntos += 3;
+            if (perfil.intensidad.includes(selectedAnswers.intensidad)) puntos += 2;
+            if (perfil.momentos.includes(selectedAnswers.momento)) puntos += 2;
+
+            const genero = normalizar(propiedad(perfume, "GENERO"));
+            if (selectedAnswers.destinatario === "regalo-mujer") {
+                if (genero.includes("femenino")) puntos += 2;
+                else if (genero.includes("unisex")) puntos += 1;
+            } else if (selectedAnswers.destinatario === "regalo-hombre") {
+                if (genero.includes("masculino")) puntos += 2;
+                else if (genero.includes("unisex")) puntos += 1;
+            } else if (selectedAnswers.destinatario === "unisex" && genero.includes("unisex")) {
+                puntos += 2;
+            }
+
+            return {puntos, perfil};
+        }
+
+        async function cargarRecomendaciones() {
+            resultGrid.innerHTML = "";
+            resultError.hidden = false;
+            resultError.textContent = "Estamos buscando tus coincidencias…";
+            try {
+                if (!perfumeCatalog.length) {
+                    const respuesta = await fetch("RESTPerfumes/listar", {headers: {"Accept": "application/json"}});
+                    if (!respuesta.ok) throw new Error("No se pudo consultar el catálogo.");
+                    perfumeCatalog = await respuesta.json();
+                }
+
+                const coincidencias = perfumeCatalog
+                    .map(perfume => ({perfume, ...puntuar(perfume)}))
+                    .sort((a, b) => b.puntos - a.puntos)
+                    .slice(0, 3);
+
+                if (!coincidencias.length) throw new Error("No hay perfumes disponibles para recomendar.");
+
+                resultGrid.innerHTML = coincidencias.map(({perfume}, indice) => {
+                    const id = propiedad(perfume, "ID");
+                    const nombre = propiedad(perfume, "NOMBRE");
+                    // Usar la escena editorial completa del perfume, no la portada recortada del catálogo.
+                    const img = `mostrar_fondo?id=${encodeURIComponent(id)}`;
+                    const enlaceDetalle = `index.html?perfume=${encodeURIComponent(id)}`;
+                    return `
+                        <article class="scent-finder-result-card${indice === 0 ? " is-top-match" : ""}">
+                            <h2 class="scent-finder-result-card__title">${escaparHTML(nombre)}</h2>
+                            <div class="scent-finder-result-card__image"><img src="${escaparHTML(img)}" alt="Frasco de ${escaparHTML(nombre)}" loading="lazy"></div>
+                            <div class="scent-finder-result-card__footer">
+                                <a href="${escaparHTML(enlaceDetalle)}" class="scent-finder-result-card__link">VER PERFUME <span aria-hidden="true">↗</span></a>
+                            </div>
+                        </article>
+                    `;
+                }).join("");
+                resultError.hidden = true;
+            } catch (error) {
+                resultError.textContent = "No hemos podido cargar el catálogo ahora. Comprueba que la tienda esté abierta e inténtalo de nuevo.";
+            }
+        }
+
+        function iniciarCuestionario() {
+            currentStep = 0;
+            Object.keys(selectedAnswers).forEach(key => delete selectedAnswers[key]);
+            intro.hidden = true;
+            results.hidden = true;
+            quiz.hidden = false;
+            mostrarPaso();
+        }
+
+        document.getElementById("scent-finder-begin").addEventListener("click", iniciarCuestionario);
+        previousButton.addEventListener("click", () => {
+            if (currentStep > 0) currentStep -= 1;
+            mostrarPaso();
+        });
+        nextButton.addEventListener("click", async () => {
+            if (!selectedAnswers[preguntas[currentStep].key]) {
+                errorMessage.hidden = false;
+                return;
+            }
+            if (currentStep < preguntas.length - 1) {
+                currentStep += 1;
+                mostrarPaso();
+                return;
+            }
+            quiz.hidden = true;
+            results.hidden = false;
+            await cargarRecomendaciones();
+        });
+        document.getElementById("scent-finder-results-previous").addEventListener("click", () => {
+            results.hidden = true;
+            quiz.hidden = false;
+            currentStep = preguntas.length - 1;
+            mostrarPaso();
+        });
+        document.getElementById("scent-finder-restart").addEventListener("click", iniciarCuestionario);
+        // Efecto líquido muy sutil para mantener movimiento sin deformar demasiado el fondo.
+        const stage = document.getElementById("scent-finder-stage");
+        const liquidCanvas = document.getElementById("scent-finder-liquid");
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        if (liquidCanvas && !reducedMotion.matches) {
+            import("https://cdn.jsdelivr.net/npm/threejs-components@0.0.27/build/backgrounds/liquid1.min.js")
+                .then(({ default: LiquidBackground }) => {
+                    const liquid = LiquidBackground(liquidCanvas);
+                    liquid.loadImage(new URL("images/scent-water-bg.png", document.baseURI).href);
+                    liquid.liquidPlane.material.metalness = 0.75;
+                    liquid.liquidPlane.material.roughness = 0.25;
+                    liquid.liquidPlane.uniforms.displacementScale.value = 0.005;
+                    liquid.setRain(false);
+                    stage.classList.add("scent-finder-stage--liquid-ready");
+                })
+                .catch(error => console.warn("No se pudo cargar el fondo líquido; se muestra la textura estática.", error));
+        }
+    })();
+</script>
+<script src="javascript/idioma.js?v=20261103idiomas"></script>
+</body>
+</html>

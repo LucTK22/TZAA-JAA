@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestionar perfumes | TZAA JAA!</title>
+    <link rel="stylesheet" href="/css/administracion.css?v=20261029c">
+    <link rel="stylesheet" href="/css/productos-admin.css?v=20261110a">
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+<body class="pagina-perfumes-admin">
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+
+    <main class="coleccion-admin">
+        <header class="coleccion-admin__cabecera">
+            <div>
+                <p class="coleccion-admin__ceja">TZAA JAA! <span>·</span> PERFUMERÍA DE AUTOR</p>
+                <h1>Gestionar perfumes</h1>
+                <p class="coleccion-admin__intro">La colección, cuidada hasta el último detalle.</p>
+            </div>
+            <a class="coleccion-admin__volver" th:href="@{/admin/inicioAdmin}"><span aria-hidden="true">←</span> Volver al panel</a>
+        </header>
+
+        <section class="coleccion-admin__barra" aria-label="Buscar y añadir perfumes">
+            <form class="coleccion-admin__busqueda" th:action="@{/admin/gestionarPerfumes}" method="get" role="search">
+                <label for="buscar-perfume">Buscar en la colección</label>
+                <div class="coleccion-admin__campo">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 4.2 4.2"></path></svg>
+                    <input id="buscar-perfume" type="search" name="nombre" th:value="${nombre}" placeholder="Nombre o marca">
+                    <button type="submit" aria-label="Buscar">Buscar</button>
+                </div>
+            </form>
+            <div class="coleccion-admin__resumen">
+                <span class="coleccion-admin__total" th:text="${total}">0</span>
+                <span th:text="${total == 1 ? 'perfume en la colección' : 'perfumes en la colección'}">perfumes en la colección</span>
+                <a th:href="@{/admin/registrarPerfume}">+ Añadir perfume</a>
+            </div>
+        </section>
+
+        <nav class="coleccion-admin__paginacion" aria-label="Paginación de perfumes">
+            <span th:if="${total > 0}" th:text="${desde + '–' + hasta + ' de ' + total}">1–10 de 14</span>
+            <span th:if="${total == 0}">0 resultados</span>
+            <div>
+                <a th:if="${anterior >= 0}" th:href="@{/admin/gestionarPerfumes(nombre=${nombre}, comienzo=${anterior})}">← Anterior</a>
+                <a th:if="${siguiente < total}" th:href="@{/admin/gestionarPerfumes(nombre=${nombre}, comienzo=${siguiente})}">Siguiente →</a>
+            </div>
+        </nav>
+
+        <section class="coleccion-admin__grid" aria-label="Perfumes">
+            <article class="perfume-admin" th:each="p : ${perfumes}">
+                <div class="perfume-admin__imagen">
+                    <img th:if="${p.imagenPortada != null}"
+                         th:src="@{'/mostrar_imagen?id=' + ${p.id}}"
+                         th:alt="${'Frasco de ' + p.nombre}">
+                    <span th:if="${p.imagenPortada == null}" aria-hidden="true">TZAA JAA!</span>
+                    <span class="perfume-admin__id" th:text="${'#' + p.id}">#01</span>
+                </div>
+                <div class="perfume-admin__contenido">
+                    <p class="perfume-admin__marca" th:text="${p.marca}">Maison Francis Kurkdjian</p>
+                    <h2 th:text="${p.nombre}">Nombre del perfume</h2>
+                    <div class="perfume-admin__datos">
+                        <span th:if="${p.genero != null}" th:text="${p.genero}">Unisex</span>
+                        <span th:if="${p.mililitros > 0}" th:text="${p.mililitros + ' ml'}">70 ml</span>
+                    </div>
+                    <p class="perfume-admin__precio" th:text="${#numbers.formatDecimal(p.precio, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00 €</p>
+                    <div class="perfume-admin__acciones">
+                        <a class="perfume-admin__editar" th:href="@{${ 'editarPerfume?id=' + p.id }}">Editar ficha <span aria-hidden="true">↗</span></a>
+                        <a class="perfume-admin__borrar" th:href="@{${ 'borrarPerfume?id=' + p.id }}"
+                           onclick="return confirm('¿Estas seguro?')">Eliminar</a>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="coleccion-admin__vacio" th:if="${#lists.isEmpty(perfumes)}">
+            <span aria-hidden="true">—</span>
+            <h2>No hay perfumes que coincidan</h2>
+            <p>Prueba con otro nombre o marca para encontrar una fragancia.</p>
+        </section>
+
+        <nav class="coleccion-admin__paginacion coleccion-admin__paginacion--inferior" aria-label="Paginación de perfumes">
+            <span th:if="${total > 0}" th:text="${desde + '–' + hasta + ' de ' + total}">1–10 de 14</span>
+            <div>
+                <a th:if="${anterior >= 0}" th:href="@{/admin/gestionarPerfumes(nombre=${nombre}, comienzo=${anterior})}">← Anterior</a>
+                <a th:if="${siguiente < total}" th:href="@{/admin/gestionarPerfumes(nombre=${nombre}, comienzo=${siguiente})}">Siguiente →</a>
+            </div>
+        </nav>
+    </main>
+
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>

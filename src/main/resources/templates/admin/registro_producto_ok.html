@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfume registrado</title>
+    <link rel="stylesheet" href="/css/administracion.css?v=20261029c">
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+<body>
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+
+<div class="formulario">
+
+    <h1>PERFUME REGISTRADO CORRECTAMENTE</h1>
+
+    <a class="admin-enlace" href="/admin/gestionarPerfumes">
+        VER PERFUMES
+    </a>
+
+    <a class="admin-enlace" href="/admin/registrarPerfume">
+        REGISTRAR OTRO
+    </a>
+
+</div>
+
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>
+

@@ -1,0 +1,41 @@
+<div class="checkout">
+    <p class="checkout-eyebrow">TU COMPRA EN TZAA JAA!</p>
+    <h2>FINALIZAR COMPRA</h2>
+    <ol class="checkout-pasos" aria-label="Progreso de compra">
+        <li class="activo">Envío</li><li>Pago</li><li>Regalo</li><li>Resumen</li>
+    </ol>
+    <!-- BLOQUE DE ENVÍO: datos para entregar el pedido al cliente. -->
+    <h3>Datos de envío</h3>
+
+    <!-- Formulario del primer paso del checkout. -->
+    <form id="formulario_compra">
+        <label>Nombre completo</label>
+        <input type="text" id="campo_nombre" required>
+
+        <label>Dirección</label>
+        <input type="text" id="campo_direccion" required>
+
+        <label>Provincia</label>
+        <input type="text" id="campo_provincia" required>
+
+        <label>Localidad</label>
+        <input type="text" id="campo_localidad" required>
+
+        <label>Código postal</label>
+        <input type="text" id="campo_codigo_postal" required>
+
+        <label>Teléfono</label>
+        <input type="tel" id="campo_telefono" required>
+
+        <label>Correo electrónico</label>
+        <input type="email" id="campo_correo" required>
+
+        <button type="button" onclick="mostrarPaso2()">CONTINUAR</button>
+    </form>
+
+    <!-- Acción para abandonar la compra y volver al catálogo público. -->
+    <button type="button" onclick="mostrar_perfumes()">VOLVER A LA TIENDA</button>
+    <!-- Versión visible del checkout para reconocer la última actualización. -->
+    <p class="checkout-actualizado">Checkout actualizado · 29/10/2026 · 12:50 (hora peninsular)</p>
+</div>
+

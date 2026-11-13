@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title>Administración</title>
+    <link rel="stylesheet" href="/css/administracion.css?v=20261029c">
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+<body>
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+
+<div class="admin-contenedor">
+
+    <h1 class="admin-titulo">Bienvenido a la administración de la tienda</h1>
+
+    <p>
+        <a class="admin-enlace" href="/admin/gestionarPerfumes">
+            GESTIONAR PERFUMES
+        </a>
+    </p>
+
+    <p>
+        <a class="admin-enlace" th:href="@{/admin/gestionarPedidos}">
+            GESTIONAR PEDIDOS
+        </a>
+    </p>
+
+    <p>
+        <a class="admin-enlace" th:href="@{/admin/categorias}">
+            GESTIONAR CATEGORÍAS
+        </a>
+    </p>
+
+    <p>
+        <a class="admin-enlace" th:href="@{/admin/usuarios}">
+            GESTIONAR USUARIOS
+        </a>
+    </p>
+
+    <p>
+        <a class="admin-enlace" href="/admin/registrarPerfume">
+            REGISTRAR PERFUME
+        </a>
+    </p>
+
+    <p>
+        <a class="admin-enlace" href="/">
+            VOLVER A LA TIENDA
+        </a>
+    </p>
+
+
+
+</div>
+
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>

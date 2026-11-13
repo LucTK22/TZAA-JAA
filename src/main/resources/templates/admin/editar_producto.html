@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Editar perfume | TZAA JAA!</title>
+    <link rel="stylesheet" href="/css/administracion.css?v=20261029c">
+    <link rel="stylesheet" href="/css/productos-admin.css?v=20261110a">
+    <link rel="stylesheet" href="/css/editar-perfume.css?v=20261110a">
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+<body class="pagina-perfumes-admin">
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+
+    <main class="coleccion-admin edicion-admin">
+        <header class="coleccion-admin__cabecera">
+            <div>
+                <p class="coleccion-admin__ceja">TZAA JAA! <span>·</span> EDITOR DE COLECCIÓN</p>
+                <h1>Editar perfume</h1>
+                <p class="coleccion-admin__intro">Ajusta la ficha y conserva la esencia de cada fragancia.</p>
+            </div>
+            <a class="coleccion-admin__volver" th:href="@{/admin/gestionarPerfumes}"><span aria-hidden="true">←</span> Volver a perfumes</a>
+        </header>
+
+        <div class="edicion-admin__composicion">
+            <aside class="edicion-admin__vista-previa" aria-label="Vista previa de la fragancia">
+                <div class="edicion-admin__imagen">
+                    <img th:if="${perfumeEditar.imagenPortada != null}"
+                         th:src="@{'/mostrar_imagen?id=' + ${perfumeEditar.id}}"
+                         th:alt="${'Frasco de ' + perfumeEditar.nombre}"
+                         id="vista-previa-imagen">
+                    <div th:if="${perfumeEditar.imagenPortada == null}" class="edicion-admin__sin-imagen" id="vista-previa-vacia">TZAA JAA!</div>
+                    <span>VISTA DE CATÁLOGO</span>
+                </div>
+                <p class="edicion-admin__marca" th:text="${perfumeEditar.marca}">Maison Francis Kurkdjian</p>
+                <h2 th:text="${perfumeEditar.nombre}">Nombre del perfume</h2>
+                <p class="edicion-admin__precio" th:text="${#numbers.formatDecimal(perfumeEditar.precio, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00 €</p>
+                <div class="edicion-admin__nota">
+                    <span aria-hidden="true">✦</span>
+                    <p>Edita el perfume</p>
+                </div>
+            </aside>
+
+            <section class="edicion-admin__formulario">
+                <div class="edicion-admin__seccion-titulo">
+                    <span>01</span>
+                    <div><h2>Información de la fragancia</h2><p>Datos que se muestran en la tienda.</p></div>
+                </div>
+
+                <form th:action="@{/admin/guardarCambiosPerfume}"
+                      th:object="${perfumeEditar}"
+                      method="post"
+                      enctype="multipart/form-data">
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="edicion-admin__campos">
+                        <div class="edicion-admin__campo">
+                            <label for="nombre">Nombre del perfume</label>
+                            <input id="nombre" type="text" th:field="*{nombre}" autocomplete="off">
+                            <span class="edicion-admin__error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+                        </div>
+                        <div class="edicion-admin__campo">
+                            <label for="marca">Marca</label>
+                            <input id="marca" type="text" th:field="*{marca}" autocomplete="organization">
+                            <span class="edicion-admin__error" th:if="${#fields.hasErrors('marca')}" th:errors="*{marca}"></span>
+                        </div>
+                        <div class="edicion-admin__campo">
+                            <label for="genero">Género o estilo</label>
+                            <input id="genero" type="text" th:field="*{genero}">
+                        </div>
+                        <div class="edicion-admin__campo">
+                            <label for="idCategoria">Familia olfativa</label>
+                            <select id="idCategoria" th:field="*{idCategoria}">
+                                <option th:each="categoria : ${categorias}"
+                                        th:value="${categoria.id}"
+                                        th:text="${categoria.nombre}"></option>
+                            </select>
+                        </div>
+                        <div class="edicion-admin__campo">
+                            <label for="precio">Precio (€)</label>
+                            <input id="precio" type="number" step="0.01" min="1" th:field="*{precio}">
+                            <span class="edicion-admin__error" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></span>
+                        </div>
+                        <div class="edicion-admin__campo">
+                            <label for="mililitros">Contenido (ml)</label>
+                            <input id="mililitros" type="number" min="1" th:field="*{mililitros}">
+                            <span class="edicion-admin__error" th:if="${#fields.hasErrors('mililitros')}" th:errors="*{mililitros}"></span>
+                        </div>
+                        <div class="edicion-admin__campo edicion-admin__campo--completo">
+                            <label for="descripcion">Descripción</label>
+                            <textarea id="descripcion" rows="5" th:field="*{descripcion}" placeholder="Describe el carácter y las notas de la fragancia."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="edicion-admin__seccion-titulo edicion-admin__seccion-titulo--imagenes">
+                        <span>02</span>
+                        <div><h2>Imágenes</h2><p>Las imágenes actuales se mantienen si dejas estos campos vacíos.</p></div>
+                    </div>
+
+                    <div class="edicion-admin__campos edicion-admin__campos--imagenes">
+                        <div class="edicion-admin__campo">
+                            <label for="fotoSubida">Fotografía del frasco</label>
+                            <input id="fotoSubida" type="file" name="fotoSubida" accept="image/*" data-preview="vista-previa-imagen">
+                            <small>Imagen principal que aparece en el catálogo.</small>
+                        </div>
+                        <div class="edicion-admin__campo">
+                            <label for="fondoSubido">Fondo de la ficha</label>
+                            <input id="fondoSubido" type="file" name="fondoSubido" accept="image/*">
+                            <small>Fondo editorial opcional al abrir la fragancia.</small>
+                        </div>
+                    </div>
+
+                    <div class="edicion-admin__acciones">
+                        <a th:href="@{/admin/gestionarPerfumes}">Cancelar</a>
+                        <button type="submit">Guardar cambios <span aria-hidden="true">→</span></button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <p class="edicion-admin__pie">TZAA JAA! · PERFUMERÍA DE AUTOR</p>
+    </main>
+
+    <script>
+        const selectorImagen = document.getElementById("fotoSubida");
+        if (selectorImagen) {
+            selectorImagen.addEventListener("change", function () {
+                const archivo = this.files && this.files[0];
+                if (!archivo || !archivo.type.startsWith("image/")) return;
+                const destino = document.getElementById("vista-previa-imagen");
+                if (destino) {
+                    if (destino.dataset.urlTemporal) URL.revokeObjectURL(destino.dataset.urlTemporal);
+                    destino.dataset.urlTemporal = URL.createObjectURL(archivo);
+                    destino.src = destino.dataset.urlTemporal;
+                } else {
+                    const vacio = document.getElementById("vista-previa-vacia");
+                    if (!vacio) return;
+                    const imagen = document.createElement("img");
+                    imagen.id = "vista-previa-imagen";
+                    imagen.alt = "Vista previa de la fotografía seleccionada";
+                    imagen.src = URL.createObjectURL(archivo);
+                    vacio.replaceWith(imagen);
+                }
+            });
+        }
+    </script>
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>

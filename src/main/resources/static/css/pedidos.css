@@ -1,0 +1,83 @@
+/* BLOQUE BASE: tipografía, colores y ancho común de la gestión de pedidos. */
+.admin-pedidos {
+    --admin-tinta: #29241f;
+    --admin-secundario: #786e62;
+    --admin-acento: #9b7847;
+    --admin-borde: #e2dbd0;
+    min-height: 100vh;
+    margin: 0;
+    background: #f8f6f1;
+    color: var(--admin-tinta);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+.pedidos-pagina { width: min(100% - 36px, 1080px); margin: 0 auto; padding: 54px 0 48px; }
+
+/* BLOQUE CABECERA: título de página, contexto de marca y navegación de vuelta. */
+.pedidos-cabecera { display: flex; justify-content: space-between; align-items: end; gap: 24px; padding-bottom: 28px; border-bottom: 1px solid var(--admin-borde); }
+.pedidos-ceja,.pedido-seccion-numero { margin: 0 0 10px; color: var(--admin-acento); font-size: 9px; font-weight: 600; letter-spacing: .2em; }
+.pedidos-cabecera h1 { margin: 0; font: 400 clamp(34px, 5vw, 48px) Georgia, "Times New Roman", serif; letter-spacing: .04em; }
+.pedidos-intro { margin: 10px 0 0; color: var(--admin-secundario); font-size: 13px; line-height: 1.6; }
+.pedidos-enlace-volver,.pedido-accion { color: var(--admin-tinta); font-size: 11px; letter-spacing: .08em; text-decoration: none; }
+.pedidos-enlace-volver:hover,.pedido-accion:hover { color: var(--admin-acento); }
+
+/* BLOQUE LISTADO: una tarjeta ligera por pedido, con estado y acceso a detalle. */
+.pedidos-listado { display: grid; gap: 12px; margin-top: 28px; }
+.pedido-tarjeta { padding: 22px 25px; border: 1px solid var(--admin-borde); background: #fffefa; box-shadow: 0 5px 18px rgb(57 45 29 / 3%); transition: border-color .18s ease, transform .18s ease; }
+.pedido-tarjeta:hover { transform: translateY(-1px); border-color: #cbb994; }
+.pedido-tarjeta-principal,.pedido-tarjeta-pie { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.pedido-identificador { margin: 0 0 7px; color: var(--admin-acento); font-size: 9px; letter-spacing: .16em; }
+.pedido-tarjeta h2 { margin: 0; font: 400 22px Georgia, "Times New Roman", serif; }
+.pedido-direccion { margin: 6px 0 0; color: var(--admin-secundario); font-size: 12px; }
+.pedido-estado { display: inline-flex; align-items: center; min-height: 27px; padding: 5px 11px; border: 1px solid #d9c9aa; background: #f6f0e5; color: #725a32; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+.pedido-estado.completado { border-color: #cbd8c5; background: #f0f5ee; color: #486341; }
+.pedido-estado.enproceso,.pedido-estado.pendiente { border-color: #e1d4b9; background: #faf5e9; color: #826837; }
+.pedido-estado.cancelado { border-color: #e0c9c5; background: #fbf0ee; color: #8c4e43; }
+.pedido-tarjeta-pie { margin-top: 18px; padding-top: 13px; border-top: 1px solid #eee9e0; color: #978d81; font-size: 10px; }
+.pedido-accion { color: var(--admin-acento); font-weight: 600; text-transform: uppercase; }
+.pedidos-vacio { padding: 60px 20px; border: 1px dashed #d9d0c4; text-align: center; }
+.pedidos-vacio-marca { color: var(--admin-acento); font: 30px Georgia, serif; }
+.pedidos-vacio h2 { margin: 10px 0; font: 400 24px Georgia, serif; }
+.pedidos-vacio p { margin: 0; color: var(--admin-secundario); font-size: 13px; }
+
+/* BLOQUE FICHA: estado, datos de envío/pago y productos del pedido elegido. */
+.pedido-estado-panel { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin: 24px 0 14px; padding: 15px 18px; border: 1px solid var(--admin-borde); background: #fffefa; }
+.pedido-estado-panel > span:first-child,.pedido-estado-panel > label { color: var(--admin-secundario); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.pedido-estado-panel select { padding: 8px 10px; border: 1px solid var(--admin-borde); background: #fff; color: inherit; font: inherit; }
+#resultado-estado-pedido { flex-basis: 100%; color: var(--admin-secundario); font-size: 12px; }
+.pedido-datos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.pedido-datos-panel,.pedido-productos-panel { padding: 24px; border: 1px solid var(--admin-borde); background: #fffefa; }
+.pedido-datos-panel h2,.pedido-productos-panel h2 { margin: 0 0 18px; font: 400 23px Georgia, "Times New Roman", serif; }
+.pedido-datos-lista { display: grid; gap: 13px; margin: 0; }
+.pedido-datos-lista > div { display: grid; grid-template-columns: minmax(105px, .7fr) 1.3fr; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid #f0ece5; }
+.pedido-datos-lista dt { color: var(--admin-secundario); font-size: 11px; }
+.pedido-datos-lista dd { margin: 0; color: var(--admin-tinta); font-size: 12px; overflow-wrap: anywhere; }
+.pedido-ayuda-pago { margin: 16px 0 0; color: #978d81; font-size: 10px; line-height: 1.5; }
+.pedido-productos-panel { margin-top: 14px; }
+.pedido-productos-cabecera { display: flex; justify-content: space-between; align-items: end; gap: 15px; }
+.pedido-productos-cabecera h2 { margin-bottom: 0; }
+.pedido-conteo { color: var(--admin-secundario); font-size: 10px; }
+.pedido-producto-fila { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto auto; align-items: center; gap: 16px; padding: 15px 0; border-bottom: 1px solid #eee9e0; }
+.pedido-producto-imagen { width: 48px; height: 58px; padding: 3px; border: 1px solid #eee8dd; background: #fff; object-fit: contain; }
+.pedido-producto-info h3 { margin: 0; font: 400 16px Georgia, serif; }
+.pedido-producto-info p,.pedido-producto-cantidad { margin: 4px 0 0; color: var(--admin-secundario); font-size: 10px; }
+.pedido-producto-precio { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pedido-productos-vacio { padding: 22px 0; color: var(--admin-secundario); font-size: 12px; }
+.pedido-total { display: flex; justify-content: space-between; align-items: center; padding-top: 18px; color: var(--admin-secundario); font-size: 12px; }
+.pedido-total strong { color: var(--admin-tinta); font: 400 22px Georgia, serif; }
+.pedido-detalle-volver { display: inline-block; margin-top: 25px; }
+.admin-pedidos-actualizado { margin-top: 32px; padding-top: 12px; border-top: 1px solid var(--admin-borde); color: #9b9287; font-size: 9px; text-align: right; }
+
+@media (max-width: 680px) {
+    .pedidos-pagina { width: min(100% - 24px, 1080px); padding-top: 30px; }
+    .pedidos-cabecera { align-items: start; flex-direction: column; }
+    .pedido-tarjeta { padding: 18px; }
+    .pedido-datos-grid { grid-template-columns: 1fr; }
+    .pedido-producto-fila { grid-template-columns: 42px minmax(0, 1fr) auto; gap: 10px; }
+    .pedido-producto-imagen { width: 40px; height: 50px; }
+    .pedido-producto-cantidad { grid-column: 2; }
+    .pedido-producto-precio { grid-column: 3; grid-row: 1 / span 2; }
+}
+
+/* Actualizado: 29/10/2026, 12:55 (Europe/Madrid). */
+
+/* Hoja separada de gestión y detalle de pedidos: 29/10/2026, 13:05 (Europe/Madrid). */

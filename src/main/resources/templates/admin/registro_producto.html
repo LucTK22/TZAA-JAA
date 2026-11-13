@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar perfume | Perfumería</title>
+    <link rel="stylesheet" href="/css/administracion.css?v=20261029c">
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+<body>
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+
+<div class="registro-perfume">
+
+    <a class="registro-volver" th:href="@{/admin/inicioAdmin}">
+        ← Volver a administración
+    </a>
+
+    <div class="registro-cabecera">
+        <p class="registro-etiqueta">Administración · Perfumería</p>
+        <h1>Registrar perfume</h1>
+        <p>Añade una nueva fragancia a la colección de tu tienda.</p>
+    </div>
+
+    <div class="registro-tarjeta">
+
+        <div class="registro-titulo-seccion">
+            <span class="registro-numero">01</span>
+            <div>
+                <h2>Información del perfume</h2>
+                <p>Introduce los datos de la fragancia.</p>
+            </div>
+        </div>
+
+        <form th:action="@{/admin/guardarPerfume}"
+              th:object="${nuevo}"
+              method="post"
+              enctype="multipart/form-data">
+
+            <div class="registro-campos">
+
+                <div class="registro-campo">
+                    <label for="nombre">Nombre del perfume</label>
+                    <input id="nombre" type="text"
+                           th:field="*{nombre}"
+                           placeholder="Ej. Sauvage">
+                    <span class="registro-error"
+                          th:if="${#fields.hasErrors('nombre')}"
+                          th:errors="*{nombre}"></span>
+                </div>
+
+                <div class="registro-campo">
+                    <label for="marca">Marca</label>
+                    <input id="marca" type="text"
+                           th:field="*{marca}"
+                           placeholder="Ej. Dior">
+                    <span class="registro-error"
+                          th:if="${#fields.hasErrors('marca')}"
+                          th:errors="*{marca}"></span>
+                </div>
+
+                <div class="registro-campo">
+                    <label for="genero">Género</label>
+                    <input id="genero" type="text"
+                           th:field="*{genero}"
+                           placeholder="Introduce el género">
+                </div>
+
+                <div class="registro-campo">
+                    <label for="idCategoria">Categoría</label>
+                    <select id="idCategoria" th:field="*{idCategoria}">
+                        <option th:each="c : ${categorias}"
+                                th:text="${c.nombre}"
+                                th:value="${c.id}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="registro-campo">
+                    <label for="precio">Precio (€)</label>
+                    <input id="precio" type="number"
+                           step="0.01" min="0"
+                           th:field="*{precio}"
+                           placeholder="Ej. 79.99">
+                    <span class="registro-error"
+                          th:if="${#fields.hasErrors('precio')}"
+                          th:errors="*{precio}"></span>
+                </div>
+
+                <div class="registro-campo">
+                    <label for="mililitros">Contenido (ml)</label>
+                    <input id="mililitros" type="number"
+                           min="0"
+                           th:field="*{mililitros}"
+                           placeholder="Ej. 100">
+                    <span class="registro-error"
+                          th:if="${#fields.hasErrors('mililitros')}"
+                          th:errors="*{mililitros}"></span>
+                </div>
+
+                <div class="registro-campo registro-campo-completo">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" rows="5"
+                              th:field="*{descripcion}"
+                              placeholder="Describe las características de la fragancia..."></textarea>
+                </div>
+
+                <div class="registro-campo registro-campo-completo">
+                    <label for="fotoSubida">Fotografía del perfume</label>
+                    <input id="fotoSubida" type="file"
+                           name="fotoSubida"
+                           accept="image/*">
+                    <small class="registro-ayuda">
+                        Selecciona una imagen desde tu dispositivo.
+                    </small>
+                </div>
+
+                <div class="registro-campo registro-campo-completo">
+                    <label for="fondoSubido">Imagen de fondo para la ficha (opcional)</label>
+                    <input id="fondoSubido" type="file" name="fondoSubido" accept="image/*">
+                    <small class="registro-ayuda">Se mostrará a pantalla completa al abrir este perfume.</small>
+                </div>
+
+            </div>
+
+            <div class="registro-botones">
+                <a class="registro-cancelar"
+                   th:href="@{/admin/inicioAdmin}">
+                    Cancelar
+                </a>
+                <button class="registro-guardar" type="submit">
+                    GUARDAR PERFUME →
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <p class="registro-pie">PERFUMERÍA · COLECCIÓN EXCLUSIVA</p>
+
+</div>
+
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>
+

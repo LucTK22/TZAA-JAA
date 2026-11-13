@@ -1,0 +1,85 @@
+
+<div class="detalle-producto">
+
+    <!-- Imagen del perfume -->
+    <div class="detalle-imagen">
+        <img src="mostrar_fondo?id={{ID}}" alt="{{NOMBRE}}">
+    </div>
+
+    <!-- Información del perfume -->
+    <div class="detalle-informacion">
+
+        <!-- Frasco del producto y sello visible solo para el Baccarat Rouge 540 destacado. -->
+        <div class="detalle-visual">
+            <span class="detalle-best-seller" hidden>BEST SELLER</span>
+            <img class="detalle-imagen-frasco" src="mostrar_imagen?id={{ID}}" alt="Frasco de {{NOMBRE}}">
+        </div>
+
+        <!-- Nombre centrado y precio debajo -->
+        <div class="detalle-cabecera">
+            <h1 class="detalle-nombre">
+                {{NOMBRE}}
+            </h1>
+
+            <div class="detalle-precio">
+                {{PRECIO}} €
+            </div>
+
+        </div>
+
+        <!-- Separador -->
+        <div class="detalle-linea"></div>
+
+        <!-- Marca -->
+        <div class="detalle-marca">
+            {{MARCA}}
+        </div>
+
+        <!-- Descripción -->
+        <span class="detalle-subtitulo">La esencia</span>
+        <p class="detalle-descripcion">
+            {{DESCRIPCION}}
+        </p>
+
+        <!-- Datos del perfume -->
+        <div class="detalle-datos">
+
+            <p>
+                <span>Género</span>
+                <span>{{GENERO}}</span>
+            </p>
+
+            <p>
+                <span>Mililitros</span>
+                <span>{{MILILITROS}} ml</span>
+            </p>
+
+            <p>
+                <span>Categoría</span>
+                <span>{{CATEGORIA}}</span>
+            </p>
+
+        </div>
+
+        <!-- Selector visual de unidades; el carrito sigue leyendo este mismo campo. -->
+        <div class="detalle-cantidad">
+            <label for="cantidad-detalle">Cantidad</label>
+            <div class="selector-cantidad">
+                <button type="button" aria-label="Quitar una unidad" onclick="cambiarCantidadDetalle(-1)">−</button>
+                <input type="number" id="cantidad-detalle" value="1" min="1" step="1" inputmode="numeric">
+                <button type="button" aria-label="Añadir una unidad" onclick="cambiarCantidadDetalle(1)">+</button>
+            </div>
+        </div>
+        <button class="detalle-boton"
+                onclick="agregarProductoCarrito({{ID}}, 'cantidad-detalle')">
+            AÑADIR AL CARRITO
+        </button>
+
+        <!-- Volver al listado -->
+        <a href="#" class="detalle-volver" onclick="mostrar_perfumes(true); return false;">
+            ← VOLVER A PERFUMES
+        </a>
+
+    </div>
+
+</div>

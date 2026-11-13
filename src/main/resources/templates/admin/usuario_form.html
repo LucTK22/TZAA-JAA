@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de usuario</title>
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+<link rel="stylesheet" href="/css/administracion.css?v=20261029c">
+<body>
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+<div class="usuario-form-pagina">
+
+    <a class="usuario-form-volver" th:href="@{/admin/usuarios}">
+        ← Volver a usuarios
+    </a>
+
+    <div class="usuario-form-tarjeta">
+
+        <p class="usuario-form-etiqueta">Administración · Perfumería</p>
+
+        <h1 class="usuario-form-titulo"
+            th:text="${usuario.id == 0 ? 'Crear usuario' : 'Editar usuario'}">
+            Crear usuario
+        </h1>
+
+        <p class="usuario-form-descripcion">
+            Gestiona los datos de la cuenta del usuario.
+        </p>
+
+        <form th:action="@{/admin/usuarios/guardar}"
+              th:object="${usuario}"
+              method="post">
+
+            <input type="hidden" th:field="*{id}">
+
+            <div class="usuario-form-campo">
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" th:field="*{email}" required>
+            </div>
+
+            <div class="usuario-form-campo">
+                <label for="pass">Contraseña</label>
+                <input type="password" id="pass" th:field="*{pass}" required>
+            </div>
+
+            <div class="usuario-form-campo">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" th:field="*{nombre}" required>
+            </div>
+
+            <div class="usuario-form-campo">
+                <label for="apellidos">Apellidos</label>
+                <input type="text" id="apellidos" th:field="*{apellidos}" required>
+            </div>
+
+            <div class="usuario-form-campo">
+                <label for="telefono">Teléfono</label>
+                <input type="text" id="telefono" th:field="*{telefono}" required>
+            </div>
+
+            <button class="usuario-form-guardar" type="submit">
+                Guardar cambios
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>
+

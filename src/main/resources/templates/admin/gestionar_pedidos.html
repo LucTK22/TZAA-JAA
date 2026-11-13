@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pedidos | TZAA JAA!</title>
+    <!-- Hoja propia para la lista y la ficha de pedidos del panel de administración. -->
+    <link rel="stylesheet" th:href="@{/css/pedidos.css?v=20261029c}">
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+<body class="admin-pedidos">
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+<main class="pedidos-pagina">
+    <!-- Cabecera de la sección y retorno al panel principal. -->
+    <header class="pedidos-cabecera">
+        <div>
+            <p class="pedidos-ceja">TZAA JAA! · ADMINISTRACIÓN</p>
+            <h1>Pedidos</h1>
+            <p class="pedidos-intro">Consulta las compras y revisa sus productos y datos de entrega.</p>
+        </div>
+        <a class="pedidos-enlace-volver" th:href="@{/admin/inicioAdmin}">← Volver al panel</a>
+    </header>
+
+    <!-- Lista de pedidos; cada tarjeta lleva a la ficha del mismo pedido. -->
+    <section class="pedidos-listado" aria-label="Listado de pedidos">
+        <article class="pedido-tarjeta" th:each="p : ${pedidos}">
+            <div class="pedido-tarjeta-principal">
+                <div>
+                    <p class="pedido-identificador">PEDIDO <span th:text="${p.id}">1</span></p>
+                    <h2 th:text="${p.nombreCompleto}">Nombre del cliente</h2>
+                    <p class="pedido-direccion" th:text="${p.direccion}">Dirección de entrega</p>
+                </div>
+                <span class="pedido-estado" th:text="${p.estado}" th:classappend="${#strings.toLowerCase(p.estado)}">Estado</span>
+            </div>
+            <div class="pedido-tarjeta-pie">
+                <span th:if="${p.fechaCreacion != null}" th:text="${#temporals.format(p.fechaCreacion, 'dd/MM/yyyy · HH:mm')}">Fecha</span>
+                <span th:if="${p.fechaCreacion == null}">Fecha pendiente</span>
+                <a class="pedido-accion" th:href="@{/admin/verDetallesPedido(id=${p.id})}">Ver detalles <span aria-hidden="true">→</span></a>
+            </div>
+        </article>
+
+        <!-- Mensaje cuando todavía no hay pedidos para mostrar. -->
+        <div class="pedidos-vacio" th:if="${#lists.isEmpty(pedidos)}">
+            <span class="pedidos-vacio-marca" aria-hidden="true">—</span>
+            <h2>Aún no hay pedidos</h2>
+            <p>Cuando se confirme una compra, aparecerá aquí.</p>
+        </div>
+    </section>
+
+    <!-- Nota de versión para reconocer la plantilla actualizada. -->
+    <footer class="admin-pedidos-actualizado">Vista actualizada · 29/10/2026 · 13:05 (hora peninsular)</footer>
+</main>
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>
+

@@ -1,0 +1,66 @@
+<!-- Paso 2: datos de pago de demostración; el número completo no se conserva en el pedido. -->
+<div class="checkout checkout-pago">
+    <p class="checkout-eyebrow">TU COMPRA EN TZAA JAA!</p>
+    <h2>FINALIZAR COMPRA — PASO 2</h2>
+    <ol class="checkout-pasos" aria-label="Progreso de compra">
+        <li class="completado">Envío</li><li class="activo">Pago</li><li>Regalo</li><li>Resumen</li>
+    </ol>
+    <h3>Datos de pago</h3>
+    <!-- BLOQUE VISUAL DE TARJETA: una tarjeta ilustrativa, no son datos de pago reales. -->
+    <div class="checkout-tarjeta-vista" aria-hidden="true">
+        <span class="checkout-tarjeta-marca">TZAA JAA! <small>PAYMENT</small></span>
+        <span class="checkout-tarjeta-chip"></span>
+        <span class="checkout-tarjeta-numero">•••• &nbsp; •••• &nbsp; •••• &nbsp; ••••</span>
+        <span class="checkout-tarjeta-pie"><span>TITULAR</span><span>VÁLIDA HASTA</span></span>
+    </div>
+
+    <!-- BLOQUE TIPO DE TARJETA: permite elegir VISA o MasterCard. -->
+    <label>Tipo de tarjeta</label>
+    <select id="tipo_tarjeta" required>
+        <option value="">Selecciona una tarjeta</option>
+        <option value="visa">VISA</option>
+        <option value="master_card">MASTER CARD</option>
+    </select>
+
+    <!-- BLOQUE NÚMERO: recoge el número y lo separa en grupos para facilitar su lectura. -->
+    <div class="checkout-campo-pago">
+        <label for="numero_tarjeta">Número de tarjeta</label>
+        <input type="text" id="numero_tarjeta" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="0000 0000 0000 0000" oninput="formatearNumeroTarjeta(this)" required>
+        <small>Escribe los números que aparecen en el frontal de tu tarjeta.</small>
+    </div>
+
+    <div class="checkout-campo-pago">
+        <label for="titular_tarjeta">Titular de la tarjeta</label>
+        <input type="text" id="titular_tarjeta" autocomplete="cc-name" placeholder="Nombre tal como aparece en la tarjeta" required>
+        <small>Indica el nombre impreso en la tarjeta.</small>
+    </div>
+
+    <!-- BLOQUE CADUCIDAD: mes y año separados para que se entiendan mejor que el control nativo. -->
+    <div class="checkout-caducidad">
+        <label for="mes_caducidad">Fecha de caducidad</label>
+        <div class="checkout-caducidad-controles">
+            <select id="mes_caducidad" autocomplete="cc-exp-month" required>
+                <option value="">Mes</option>
+                <option value="01">01 — Enero</option><option value="02">02 — Febrero</option>
+                <option value="03">03 — Marzo</option><option value="04">04 — Abril</option>
+                <option value="05">05 — Mayo</option><option value="06">06 — Junio</option>
+                <option value="07">07 — Julio</option><option value="08">08 — Agosto</option>
+                <option value="09">09 — Septiembre</option><option value="10">10 — Octubre</option>
+                <option value="11">11 — Noviembre</option><option value="12">12 — Diciembre</option>
+            </select>
+            <span aria-hidden="true">/</span>
+            <select id="ano_caducidad" autocomplete="cc-exp-year" required>
+                <option value="">Año</option>
+                <option>2026</option><option>2027</option><option>2028</option><option>2029</option>
+                <option>2030</option><option>2031</option><option>2032</option><option>2033</option>
+                <option>2034</option><option>2035</option><option>2036</option>
+            </select>
+        </div>
+        <small>La fecha está impresa junto al número de tarjeta.</small>
+    </div>
+
+    <button type="button" onclick="mostrarPaso3()">CONTINUAR</button>
+    <!-- Marca visible de la versión aplicada para distinguirla de una copia antigua. -->
+    <p class="checkout-actualizado">Checkout actualizado · 29/10/2026 · 12:50 (hora peninsular)</p>
+</div>
+

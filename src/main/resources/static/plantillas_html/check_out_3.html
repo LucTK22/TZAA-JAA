@@ -1,0 +1,19 @@
+<div class="checkout">
+    <p class="checkout-eyebrow">TU COMPRA EN TZAA JAA!</p>
+    <h2>FINALIZAR COMPRA — PASO 3</h2>
+    <ol class="checkout-pasos" aria-label="Progreso de compra">
+        <li class="completado">Envío</li><li class="completado">Pago</li><li class="activo">Regalo</li><li>Resumen</li>
+    </ol>
+    <!-- BLOQUE PREGUNTA DE REGALO: preferencia del cliente específica para una tienda de perfumes. -->
+    <h3>Un detalle para tu compra</h3>
+    <label for="es_regalo">¿Es un regalo?</label>
+    <select id="es_regalo" required>
+        <option value="">Selecciona una opción</option>
+        <option value="true">Sí, es para regalo</option>
+        <option value="false">No</option>
+    </select>
+    <button type="button" onclick="mostrarResumenPedido()">CONTINUAR</button>
+    <!-- Versión visible del checkout para reconocer la última actualización. -->
+    <p class="checkout-actualizado">Checkout actualizado · 29/10/2026 · 12:50 (hora peninsular)</p>
+</div>
+

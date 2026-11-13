@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de categoría</title>
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+<body>
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+
+<h1 th:text="${categoria.id == 0 ? 'Crear categoría' : 'Editar categoría'}">Crear categoría</h1>
+
+<form th:action="@{/admin/categorias/guardar}" th:object="${categoria}" method="post">
+
+    <input type="hidden" th:field="*{id}">
+
+    <p>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" th:field="*{nombre}" required>
+    </p>
+
+    <p>
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" th:field="*{descripcion}" required></textarea>
+    </p>
+
+    <button type="submit">Guardar categoría</button>
+
+</form>
+
+<p>
+    <a th:href="@{/admin/categorias}">Volver a categorías</a>
+</p>
+
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>
+

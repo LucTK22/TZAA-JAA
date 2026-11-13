@@ -1,0 +1,30 @@
+.admin-selector-idioma {
+    position: fixed;
+    z-index: 50;
+    top: 14px;
+    right: 18px;
+    display: flex;
+    gap: 5px;
+    padding: 5px;
+    border: 1px solid #c9b28c;
+    background: rgb(255 255 255 / 94%);
+    box-shadow: 0 3px 14px rgb(30 24 17 / 12%);
+}
+
+.admin-selector-idioma button {
+    min-width: 34px;
+    padding: 6px 8px;
+    border: 0;
+    background: transparent;
+    color: #54432c;
+    cursor: pointer;
+    font: 600 10px Arial, sans-serif;
+    letter-spacing: .08em;
+}
+
+.admin-selector-idioma button:hover,
+.admin-selector-idioma button:focus-visible,
+.admin-selector-idioma button[aria-pressed="true"] {
+    background: #967344;
+    color: #fffaf2;
+}

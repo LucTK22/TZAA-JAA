@@ -1,0 +1,55 @@
+<div class="productos">
+
+    {{#.}}
+
+    <div class="producto">
+
+        <div class="producto-imagen">
+            <img src="mostrar_imagen?id={{ID}}" alt="{{NOMBRE}}">
+        </div>
+
+        <div class="producto-informacion">
+
+            <div class="producto-nombre">
+                {{NOMBRE}}
+            </div>
+
+            <div class="producto-marca">
+                {{MARCA}}
+            </div>
+
+            <div class="producto-descripcion">
+                {{CATEGORIA}}
+                <br>
+                {{GENERO}} · {{MILILITROS}} ml
+            </div>
+
+            <div class="producto-pie">
+
+                <a href="#" class="producto-boton"
+                   onclick="mostrar_detalles({{ID}}); return false;">
+                    VER PERFUME
+                </a>
+
+                <div class="producto-precio">
+                    {{PRECIO}} €
+                </div>
+
+            </div>
+
+            <div class="producto-compra">
+                <label for="cantidad-{{ID}}">Cantidad</label>
+                <input type="number" id="cantidad-{{ID}}" value="1" min="1" step="1">
+                <a href="#" class="producto-boton"
+                   onclick="agregarProductoCarrito({{ID}}, 'cantidad-{{ID}}'); return false;">
+                    AÑADIR AL CARRITO
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    {{/.}}
+
+</div>

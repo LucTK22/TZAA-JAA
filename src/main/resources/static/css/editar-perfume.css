@@ -1,0 +1,204 @@
+.edicion-admin__composicion {
+    display: grid;
+    grid-template-columns: minmax(240px, 310px) minmax(0, 1fr);
+    align-items: start;
+    gap: 24px;
+    margin-top: 27px;
+}
+
+.edicion-admin__vista-previa,
+.edicion-admin__formulario {
+    border: 1px solid rgba(164, 147, 119, .28);
+    background: rgba(255, 253, 249, .82);
+    box-shadow: 0 10px 32px rgba(46, 37, 27, .045);
+}
+
+.edicion-admin__vista-previa { padding: 14px; }
+
+.edicion-admin__imagen {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1 / 1.1;
+    overflow: hidden;
+    background: linear-gradient(145deg, #e8e1d6, #f3eee6 58%, #e1d6c6);
+}
+
+.edicion-admin__imagen::after {
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(154, 122, 76, .2);
+    content: "";
+    pointer-events: none;
+}
+
+.edicion-admin__imagen img {
+    width: 100%;
+    height: 100%;
+    padding: 8%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+}
+
+.edicion-admin__imagen > span {
+    position: absolute;
+    bottom: 22px;
+    z-index: 1;
+    color: #766347;
+    font-size: 8px;
+    letter-spacing: .16em;
+}
+
+.edicion-admin__sin-imagen {
+    color: rgba(111, 91, 62, .55);
+    font: 15px Georgia, serif;
+    letter-spacing: .14em;
+}
+
+.edicion-admin__marca {
+    margin: 19px 0 7px;
+    color: #8b7657;
+    font-size: 8px;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+}
+
+.edicion-admin__vista-previa h2 {
+    margin: 0;
+    font: 400 24px/1.25 Georgia, "Times New Roman", serif;
+}
+
+.edicion-admin__precio {
+    margin: 11px 0 0;
+    color: #30271f;
+    font: 16px Georgia, "Times New Roman", serif;
+}
+
+.edicion-admin__nota {
+    display: flex;
+    gap: 9px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e8e0d4;
+}
+
+.edicion-admin__nota span { color: #a38659; }
+.edicion-admin__nota p { margin: 0; color: #81766a; font: 11px/1.6 Georgia, serif; }
+
+.edicion-admin__formulario { padding: clamp(20px, 3vw, 36px); }
+
+.edicion-admin__seccion-titulo {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 23px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #e8e0d4;
+}
+
+.edicion-admin__seccion-titulo > span {
+    display: grid;
+    place-items: center;
+    width: 35px;
+    height: 35px;
+    flex: 0 0 35px;
+    border: 1px solid #d7c7aa;
+    border-radius: 50%;
+    color: #927449;
+    font: 13px Georgia, serif;
+}
+
+.edicion-admin__seccion-titulo h2 { margin: 0 0 4px; font: 400 20px Georgia, "Times New Roman", serif; }
+.edicion-admin__seccion-titulo p { margin: 0; color: #857a6d; font-size: 11px; }
+.edicion-admin__campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 16px; }
+.edicion-admin__campo { display: flex; flex-direction: column; min-width: 0; }
+.edicion-admin__campo--completo { grid-column: 1 / -1; }
+
+.edicion-admin__campo label {
+    margin-bottom: 7px;
+    color: #625747;
+    font-size: 9px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+}
+
+.edicion-admin__campo input,
+.edicion-admin__campo select,
+.edicion-admin__campo textarea {
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid #ded6c8;
+    border-radius: 0;
+    outline: 0;
+    background: #fffefa;
+    color: #302a23;
+    font: 13px Arial, sans-serif;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.edicion-admin__campo textarea { min-height: 110px; resize: vertical; line-height: 1.55; }
+.edicion-admin__campo input:focus, .edicion-admin__campo select:focus, .edicion-admin__campo textarea:focus { border-color: #a88b5b; box-shadow: 0 0 0 2px rgba(168, 139, 91, .1); }
+.edicion-admin__campo input[type="file"] { padding: 7px; font-size: 11px; }
+.edicion-admin__campo small { margin-top: 7px; color: #897f73; font: 11px/1.5 Georgia, serif; }
+.edicion-admin__error { margin-top: 6px; color: #a34c42; font-size: 11px; }
+
+.edicion-admin__seccion-titulo--imagenes { margin: 29px 0 18px; }
+.edicion-admin__campos--imagenes { gap: 15px; }
+
+.edicion-admin__acciones {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    margin-top: 27px;
+    padding-top: 20px;
+    border-top: 1px solid #e8e0d4;
+}
+
+.edicion-admin__acciones > a {
+    color: #77664c;
+    font-size: 9px;
+    letter-spacing: .12em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.edicion-admin__acciones > button {
+    padding: 13px 17px;
+    border: 1px solid #30271f;
+    background: #30271f;
+    color: #f8f3e9;
+    cursor: pointer;
+    font-size: 9px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    transition: border-color .2s ease, background .2s ease;
+}
+
+.edicion-admin__acciones > button:hover { border-color: #8d7048; background: #8d7048; }
+.edicion-admin__acciones > button span { padding-left: 8px; }
+.edicion-admin__pie { margin: 30px 0 0; color: #a49a89; font-size: 8px; letter-spacing: .22em; text-align: center; }
+
+@media (max-width: 850px) {
+    .edicion-admin__composicion { grid-template-columns: minmax(190px, 260px) minmax(0, 1fr); gap: 14px; }
+    .edicion-admin__formulario { padding: 20px; }
+}
+
+@media (max-width: 650px) {
+    .edicion-admin__composicion { grid-template-columns: 1fr; }
+    .edicion-admin__vista-previa { display: grid; grid-template-columns: 105px 1fr; column-gap: 15px; align-items: center; }
+    .edicion-admin__imagen { grid-row: span 4; aspect-ratio: 1; }
+    .edicion-admin__marca { align-self: end; margin-top: 0; }
+    .edicion-admin__vista-previa h2 { align-self: start; font-size: 19px; }
+    .edicion-admin__precio { align-self: start; margin-top: 0; }
+    .edicion-admin__nota { grid-column: 1 / -1; }
+}
+
+@media (max-width: 480px) {
+    .edicion-admin__campos { grid-template-columns: 1fr; }
+    .edicion-admin__campo--completo { grid-column: auto; }
+    .edicion-admin__campos--imagenes { gap: 17px; }
+    .edicion-admin__acciones { align-items: stretch; flex-direction: column-reverse; gap: 14px; }
+    .edicion-admin__acciones > a, .edicion-admin__acciones > button { text-align: center; }
+}

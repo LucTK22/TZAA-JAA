@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title>Login administrador</title>
+    <link rel="stylesheet" href="/css/administracion.css?v=20261029c">
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+<body>
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+
+<div class="formulario">
+
+    <h1>LOGIN ADMINISTRADOR</h1>
+
+    <form action="/loginAdmin" method="get">
+
+        <label>Contraseña:</label>
+        <input type="password" name="pass-login-admin">
+
+        <input class="boton" type="submit" value="ENTRAR">
+
+    </form>
+
+</div>
+
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>
+

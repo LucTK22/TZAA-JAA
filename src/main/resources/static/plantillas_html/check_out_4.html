@@ -1,0 +1,29 @@
+<div class="checkout">
+  <p class="checkout-eyebrow">TU COMPRA EN TZAA JAA!</p>
+  <h2>RESUMEN DEL PEDIDO</h2>
+  <ol class="checkout-pasos" aria-label="Progreso de compra">
+    <li class="completado">Envío</li><li class="completado">Pago</li><li class="completado">Regalo</li><li class="activo">Resumen</li>
+  </ol>
+  <!-- BLOQUE DATOS DE ENVÍO: resumen de la dirección y contacto introducidos. -->
+  <h3>Datos de envío</h3>
+  <p id="resumen_nombre"></p>
+  <p id="resumen_direccion"></p>
+  <p id="resumen_provincia"></p>
+  <p id="resumen_localidad"></p>
+  <p id="resumen_codigo_postal"></p>
+  <p id="resumen_telefono"></p>
+  <p id="resumen_correo"></p>
+  <p id="resumen_regalo"></p>
+  <!-- BLOQUE DATOS DE PAGO: muestra el tipo y los últimos dígitos, nunca el número completo. -->
+  <h3>Datos de pago</h3>
+  <p id="resumen_tarjeta"></p>
+  <!-- BLOQUE PRODUCTOS: JavaScript inserta miniaturas, nombres, cantidades y subtotales del carrito. -->
+  <h3>Productos</h3>
+  <div id="resumen_productos"></div>
+  <p><strong>Total: <span id="resumen_total">0,00</span> €</strong></p>
+  <button type="button" onclick="mostrarPaso2()">VOLVER</button>
+  <button type="button" id="boton_confirmar_pedido" onclick="confirmarCompra()">CONFIRMAR PEDIDO</button>
+  <!-- Versión visible del checkout para reconocer la última actualización. -->
+  <p class="checkout-actualizado">Checkout actualizado · 29/10/2026 · 12:50 (hora peninsular)</p>
+</div>
+

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de usuarios | Perfumería</title>
+
+    <link rel="stylesheet" href="/css/administracion.css?v=20261029c">
+
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+
+<body>
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+
+<div class="usuarios-pagina">
+
+    <a class="usuarios-volver" th:href="@{/admin/inicioAdmin}">
+        ← Volver a administración
+    </a>
+
+    <div class="usuarios-cabecera">
+        <div>
+            <p class="usuarios-etiqueta">Administración · Perfumería</p>
+            <h1 class="usuarios-titulo">Gestión de usuarios</h1>
+            <p class="usuarios-descripcion">
+                Consulta y administra los usuarios de tu tienda.
+            </p>
+        </div>
+
+        <a class="usuarios-boton" th:href="@{/admin/usuarios/nuevo}">
+            + Nuevo usuario
+        </a>
+    </div>
+
+    <div class="usuarios-tabla-contenedor">
+        <table class="usuarios-tabla">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="usuario : ${usuarios}">
+                <td class="usuarios-id" th:text="${usuario.id}"></td>
+                <td class="usuarios-email" th:text="${usuario.email}"></td>
+                <td th:text="${usuario.nombre}"></td>
+                <td th:text="${usuario.apellidos}"></td>
+                <td th:text="${usuario.telefono}"></td>
+                <td>
+                    <div class="usuarios-acciones">
+                        <a class="usuarios-editar"
+                           th:href="@{/admin/usuarios/editar/{id}(id=${usuario.id})}">
+                            Editar
+                        </a>
+
+                        <a class="usuarios-eliminar"
+                           th:href="@{/admin/usuarios/eliminar/{id}(id=${usuario.id})}"
+                           onclick="return confirm('¿Seguro que quieres eliminar este usuario?')">
+                            Eliminar
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(usuarios)}">
+                <td colspan="6" class="usuarios-vacio">
+                    Todavía no hay usuarios registrados.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>
+

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TZAA JAA!</title>
+    <!-- CSS PÚBLICO: catálogo, carrito, checkout e identificación de clientes. -->
+    <link rel="stylesheet" href="css/publico.css?v=20261107bannervideo">
+    <script src="librerias_js/jquery.js"></script>
+    <script src="librerias_js/mustache.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hiseb/confetti@2.2.0/dist/confetti.min.js"></script>
+</head>
+<body>
+
+<header class="cabecera">
+    <div class="logo">
+        <span>TZAA JAA!</span>
+        <small>PERFUMERÍA DE AUTOR</small>
+    </div>
+
+    <nav class="menu">
+        <a href="#" id="inicio">INICIO</a>
+        <a href="#" id="perfumes">PERFUMES</a>
+        <a href="#" onclick="mostrar_formulario_registro_usuario()">
+            Registrarme
+        </a>
+        <a href="#" id="identificarme">IDENTIFICARME</a>
+        <a href="#" id="carrito">CARRITO</a>
+        <a href="#" id="pedidos">MIS PEDIDOS</a>
+        <a href="#" id="mis_datos">MIS DATOS</a>
+        <a href="#" id="cerrar_sesion">CERRAR SESIÓN</a>
+    </nav>
+
+    <div id="usuarioActual" class="usuario-actual">
+        Usuario no identificado
+    </div>
+
+    <a class="acceso-admin" href="admin/inicioAdmin">ADMIN</a>
+</header>
+
+<main class="contenido">
+
+    <section class="banner-principal"></section>
+
+    <div id="contenedor"></div>
+
+
+
+</main>
+
+<button class="volver-arriba" type="button" aria-label="Volver al inicio" title="Volver arriba">
+    <span aria-hidden="true">↑</span>
+</button>
+
+<script>
+
+    // parte de descarga de plantillas html
+
+    // La plantilla de bienvenida se carga dentro de la portada, antes del catálogo.
+    $.get("plantillas_html/inicio.html?v=20261107bannervideo2").done(function(res){
+        $(".banner-principal").html(res)
+        const video = document.querySelector(".banner-video");
+        if (video) video.play().catch(function () {});
+    })
+
+    $.get("plantillas_html/listado_productos.html").done(function(res){
+        plantilla_productos = res
+    })
+
+    const cargaPlantillaDetalles = $.get("plantillas_html/detalles_producto.html?v=20261031j").done(function(res){
+        plantilla_detalles_producto = res
+    })
+
+    $.get("plantillas_html/carrito.html").done(function(res){
+        plantilla_carrito = res
+    })
+
+    $.get("plantillas_html/registro_usuario.html?v=20261030i").done(function(res){
+        plantilla_registro_usuario = res
+    })
+
+    $.get("plantillas_html/identificar_usuario.html").done(function(res){
+        plantilla_login_usuario = res
+    })
+
+    let nombre_login = ""
+    let idsPerfumesAgotados = new Set();
+
+    function normalizarNombrePerfume(nombre){
+        return String(nombre || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, " ")
+            .trim();
+    }
+
+    function esPerfumeAgotado(nombre){
+        const clave = normalizarNombrePerfume(nombre);
+        return clave === "724" || clave === "kurky";
+    }
+
+
+    // parte de atencion a enlaces
+
+    $("#inicio").click(
+        function (event){
+            event.preventDefault();
+            mostrar_perfumes();
+            window.scrollTo({top: 0, behavior: "smooth"});
+        }
+    )//end inicio
+
+
+    function mostrar_formulario_registro_usuario(){
+        document.body.classList.remove("vista-detalle-perfume");
+        $("#contenedor").html(plantilla_registro_usuario)
+    }
+
+    function mostrar_perfumes(desplazarAlCatalogo){
+        document.body.classList.remove("vista-detalle-perfume");
+
+        //primero pedimos el json de perfumes
+
+        $.getJSON("RESTPerfumes/listar").done(
+
+            function(json){
+
+                console.log(json)
+                idsPerfumesAgotados = new Set(
+                    json.filter(perfume => esPerfumeAgotado(perfume.NOMBRE))
+                        .map(perfume => Number(perfume.ID))
+                );
+
+                // Los primeros ocho perfumes forman el catálogo editorial original.
+                // Los añadidos después se muestran debajo del bloque «Descubrir mi esencia».
+                const perfumesPrincipales = json.slice(0, 8);
+                const perfumesPosteriores = json.slice(8);
+                resultadoMustache = Mustache.render(plantilla_productos, perfumesPrincipales)
+
+                $("#contenedor").html(resultadoMustache)
+
+                // Fotos editoriales intercaladas entre las tarjetas, sin alterar las acciones de compra.
+                const tarjetasProducto = $("#contenedor .producto");
+                if (tarjetasProducto.length > 1) {
+                    tarjetasProducto.eq(1).after(
+                        '<div class="producto-editorial"><img src="images/editorial_baccarat_ice.png?v=20261030b" alt="Perfume Baccarat Rouge 540 sobre el agua entre flores"></div>'
+                    );
+                }
+                if (tarjetasProducto.length > 3) {
+                    tarjetasProducto.last().after(
+                        '<div class="producto-editorial producto-editorial--secundaria"><img src="images/editorial_aqua_celestia.jpg" alt="Aqua Celestia Forte en una escena editorial"></div>'
+                    );
+                    const contenedorProductos = $("#contenedor .productos");
+                    contenedorProductos
+                        .addClass("productos-con-foto-final")
+                        .css("--fila-final-catalogo", 2 + Math.ceil((tarjetasProducto.length - 4) / 4));
+                    tarjetasProducto.eq(tarjetasProducto.length - 2).addClass("producto-ultima-fila-derecha-1");
+                    tarjetasProducto.last().addClass("producto-ultima-fila-derecha-2");
+                }
+
+                // Invitación al Scent Finder al final del catálogo: abre la prueba de agua en una página independiente.
+                $("#contenedor").append(`
+                    <section class="scent-finder-promo" aria-label="Encuentra tu esencia">
+                        <div class="scent-finder-promo__portal-image" aria-hidden="true"></div>
+                        <canvas class="scent-finder-promo__liquid-canvas" aria-hidden="true"></canvas>
+                        <div class="scent-finder-promo__water" aria-hidden="true">
+                        </div>
+                        <div class="scent-finder-promo__copy">
+                            <a class="scent-finder-promo__link" href="scent-finder.html?v=20261105aguasuave5">DESCUBRIR MI ESENCIA <span aria-hidden="true">↗</span></a>
+                        </div>
+                    </section>
+                `);
+
+                // Efecto de agua basado en threejs-components (Kevin Levron).
+                // Referencia: https://codepen.io/soju22/pen/myVWBGa — CC BY-NC-SA 4.0.
+                // Este bloque vive solo dentro de la imagen de «Encuentra tu esencia».
+                const portal = document.querySelector(".scent-finder-promo");
+                if (portal) {
+                    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+                    const canvas = portal.querySelector(".scent-finder-promo__liquid-canvas");
+
+                    if (canvas && !reducedMotion.matches) {
+                        import("https://cdn.jsdelivr.net/npm/threejs-components@0.0.27/build/backgrounds/liquid1.min.js")
+                            .then(({ default: LiquidBackground }) => {
+                                if (!portal.isConnected) return;
+                                const liquido = LiquidBackground(canvas);
+                                liquido.loadImage(new URL("images/scent-finder-editorial.png?v=20261105banner", document.baseURI).href);
+                                liquido.liquidPlane.material.metalness = 0.75;
+                                liquido.liquidPlane.material.roughness = 0.25;
+                                liquido.liquidPlane.uniforms.displacementScale.value = 0.005;
+                                liquido.setRain(false);
+                                portal.classList.add("scent-finder-promo--liquid-ready");
+                            })
+                            .catch(error => console.warn("No se pudo cargar el efecto líquido; se muestra la imagen normal.", error));
+                    }
+                    portal.addEventListener("pointermove", event => {
+                        if (reducedMotion.matches || event.pointerType === "touch") return;
+                        const bounds = portal.getBoundingClientRect();
+                        const x = event.clientX - bounds.left;
+                        const y = event.clientY - bounds.top;
+                        portal.style.setProperty("--portal-x", `${x}px`);
+                        portal.style.setProperty("--portal-y", `${y}px`);
+                    });
+
+                }
+
+                // Perfumes añadidos después de los ocho iniciales: aparecen tras el Scent Finder.
+                if (perfumesPosteriores.length > 0) {
+                    $("#contenedor").append(Mustache.render(plantilla_productos, perfumesPosteriores));
+                    const novedades = $("#contenedor .productos").last().addClass("productos-novedades");
+                    novedades.append(
+                        '<div class="producto-editorial producto-editorial--novedades"><img src="images/editorial_kurkdjian_boutique.png?v=20261105d" alt="Perfumes Maison Francis Kurkdjian junto a una bañera"></div>'
+                    );
+                }
+
+                $("#contenedor .producto").each(function(){
+                    const tarjeta = $(this);
+                    if (!esPerfumeAgotado(tarjeta.find(".producto-nombre").text())) return;
+
+                    tarjeta.addClass("producto--agotado");
+                    tarjeta.find(".producto-imagen").append(
+                        '<span class="producto-agotado-badge">SOLD OUT</span>'
+                    );
+                    tarjeta.find(".producto-compra .producto-boton").replaceWith(
+                        '<button class="producto-boton producto-boton--agotado" type="button" disabled aria-disabled="true">SOLD OUT</button>'
+                    );
+                });
+
+                // Cierre editorial de la página: dos imágenes y un espacio central para el vídeo.
+                $("#contenedor").append(`
+                    <section class="catalogo-cierre-media" aria-label="Momentos de perfumería">
+                        <figure class="catalogo-cierre-media__pieza">
+                            <img src="images/cierre-petit-matin.png?v=20261105b" alt="Perfume Le Beau Parfum en París al atardecer">
+                        </figure>
+                        <video class="catalogo-cierre-media__video" controls playsinline preload="metadata" aria-label="Vídeo de fragancia">
+                            <source src="videos/5758891-uhd_2160_3840_30fps.mp4?v=20261105" type="video/mp4">
+                            Tu navegador no puede reproducir este vídeo.
+                        </video>
+                        <figure class="catalogo-cierre-media__pieza">
+                            <img src="images/cierre-fragancias-agua.png?v=20261105c" alt="Bolsa de Maison Francis Kurkdjian junto a flores">
+                        </figure>
+                    </section>
+                    <footer class="catalogo-cierre" aria-label="Información de TZAA JAA!">
+                        <p class="catalogo-cierre__marca">TZAA JAA! · PERFUMERÍA DE AUTOR</p>
+                        <h2>UN AROMA. UNA HUELLA.</h2>
+                        <p class="catalogo-cierre__frase">Fragancias elegidas para acompañar cada historia.</p>
+                        <p class="catalogo-cierre__secciones">PERFUMES · SOBRE NOSOTROS · CONTACTO · ATENCIÓN AL CLIENTE</p>
+                        <p class="catalogo-cierre__secciones">ENVÍOS Y DEVOLUCIONES · PRIVACIDAD</p>
+                        <p class="catalogo-cierre__copyright">© 2026 TZAA JAA! · TODOS LOS DERECHOS RESERVADOS</p>
+                    </footer>
+                `);
+
+                // El enlace PERFUMES baja al catálogo; la entrada inicial mantiene la portada arriba.
+                if (desplazarAlCatalogo) {
+                    document.getElementById("contenedor").scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+                }
+
+                $(".producto-imagen").each(function(){
+
+                    const imagen = this;
+                    const foto = imagen.querySelector("img");
+
+                    imagen.addEventListener("mousemove", function(event){
+
+                        const rect = imagen.getBoundingClientRect();
+
+                        const x = event.clientX - rect.left;
+                        const y = event.clientY - rect.top;
+
+                        const centroX = rect.width / 2;
+                        const centroY = rect.height / 2;
+
+                        const rotacionY = (x - centroX) / 25;
+                        const rotacionX = (centroY - y) / 25;
+
+                        foto.style.transform =
+                            "perspective(800px) rotateX(" +
+                            rotacionX +
+                            "deg) rotateY(" +
+                            rotacionY +
+                            "deg) scale(1.15)";
+                    });
+
+                    imagen.addEventListener("mouseleave", function(){
+
+                        foto.style.transform =
+                            "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)";
+                    });
+
+                });
+
+            }
+
+        )
+
+    }//end mostrar_perfumes
+
+
+    function mostrar_detalles(id){
+        console.log("ID recibido:", id);
+
+        $.getJSON("RESTPerfumes/obtener-perfume",
+            {
+                id : id
+            }
+        ).done(
+            function(json){
+                console.log(json);
+                const perfumeAgotado = esPerfumeAgotado(json.NOMBRE);
+                if (perfumeAgotado) idsPerfumesAgotados.add(Number(json.ID));
+                // Cada perfume destacado aplica su fondo, frasco y tono de caja propios.
+                const nombrePerfume = String(json.NOMBRE || "").trim().toLowerCase();
+                const esBaccaratDestacado = nombrePerfume === "baccarat rouge 540";
+                const esGrandSoir = nombrePerfume === "grand soir";
+                const esBaccaratEDP = nombrePerfume.includes("baccarat rouge 540")
+                    && (nombrePerfume.includes("edp") || nombrePerfume.includes("eau de parfum"));
+                const esOudSatinMood = nombrePerfume === "oud satin mood";
+                const esOudSatinMoodExtrait = nombrePerfume === "oud satin mood extrait";
+                const esGentleFluidityGold = nombrePerfume === "gentle fluidity gold";
+                const esAbsoluePourLeSoir = nombrePerfume === "absolue pour le soir";
+                const esRefletsDAmbre = nombrePerfume === "reflets d ambre"
+                    || nombrePerfume === "reflets d'ambre"
+                    || nombrePerfume === "reflets d’ambre";
+                const nombrePerfumeNormalizado = nombrePerfume.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                const nombreParaTema = nombrePerfumeNormalizado.replace(/[^a-z0-9]+/g, " ").trim();
+                const esLeauALaRose = nombreParaTema.startsWith("l eau a la rose");
+                const esAmyrisFemmeExtrait = nombreParaTema.includes("amyris femme")
+                    && (nombreParaTema.includes("extrait") || /\bep\b/.test(nombreParaTema));
+                const esAmyrisFemme = nombreParaTema.includes("amyris femme") && !esAmyrisFemmeExtrait;
+                const esALaRose = nombrePerfumeNormalizado === "a la rose";
+                const tarjetaDetalle = $(Mustache.render(
+                    plantilla_detalles_producto,
+                    json
+                ));
+                if (esBaccaratDestacado) {
+                    tarjetaDetalle.addClass("detalle-es-bestseller");
+                    tarjetaDetalle.find(".detalle-best-seller").prop("hidden", false);
+                    tarjetaDetalle.find(".detalle-imagen img").attr(
+                        "src", "images/fondos_perfumes/fondo_baccarat_rouge_540.png?v=20261031a"
+                    );
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/baccarat_rouge_540.png?v=20261031a"
+                    );
+                } else if (esGrandSoir) {
+                    tarjetaDetalle.addClass("detalle-grand-soir");
+                    tarjetaDetalle.find(".detalle-imagen img").attr(
+                        "src", "images/fondos_perfumes/fondo_grand_soir.png?v=20261031d"
+                    );
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/grand_soir.png?v=20261031a"
+                    );
+                } else if (esBaccaratEDP) {
+                    tarjetaDetalle.addClass("detalle-baccarat-edp");
+                    tarjetaDetalle.find(".detalle-imagen img").attr(
+                        "src", "images/fondos_perfumes/fondo_baccarat_rouge_540_eau_de_parfum.png?v=20261031a"
+                    );
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/baccarat_rouge_540_edp.png?v=20261031a"
+                    );
+                } else if (esOudSatinMoodExtrait) {
+                    tarjetaDetalle.addClass("detalle-oud-satin-extrait");
+                    tarjetaDetalle.find(".detalle-imagen img").attr(
+                        "src", "images/fondos_perfumes/fondo_oud_satin_mood_extrait.png?v=20261031b"
+                    );
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/oud_satin_mood_extrait.png?v=20261031a"
+                    );
+                } else if (esOudSatinMood) {
+                    tarjetaDetalle.addClass("detalle-oud-satin-mood");
+                    tarjetaDetalle.find(".detalle-imagen img").attr(
+                        "src", "images/fondos_perfumes/fondo_oud_satin_mood.png?v=20261031d"
+                    );
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/oud_satin_mood.png?v=20261031a"
+                    );
+                } else if (esGentleFluidityGold) {
+                    tarjetaDetalle.addClass("detalle-gentle-fluidity-gold");
+                    tarjetaDetalle.find(".detalle-imagen img").attr(
+                        "src", "images/fondos_perfumes/fondo_gentle_fluidity_gold.png?v=20261031a"
+                    );
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/gentle_fluidity_gold.png?v=20261031a"
+                    );
+                } else if (esAbsoluePourLeSoir) {
+                    tarjetaDetalle.addClass("detalle-absolue-pour-le-soir");
+                    tarjetaDetalle.find(".detalle-imagen img").attr(
+                        "src", "images/fondos_perfumes/fondo_absolue_pour_le_soir.png?v=20261031a"
+                    );
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/absolue_pour_le_soir.png?v=20261031a"
+                    );
+                } else if (esRefletsDAmbre) {
+                    tarjetaDetalle.addClass("detalle-reflets-d-ambre");
+                    tarjetaDetalle.find(".detalle-imagen img").attr(
+                        "src", "images/fondos_perfumes/fondo_reflets_d_ambre.png?v=20261031a"
+                    );
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/reflets_d_ambre.png?v=20261031a"
+                    );
+                } else if (esLeauALaRose) {
+                    tarjetaDetalle.addClass("detalle-leau-a-la-rose");
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/leau_a_la_rose.png?v=20261103a"
+                    );
+                } else if (esAmyrisFemmeExtrait) {
+                    tarjetaDetalle.addClass("detalle-amyris-femme-extrait");
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/amyris_femme_extrait.png?v=20261103a"
+                    );
+                } else if (esAmyrisFemme) {
+                    tarjetaDetalle.addClass("detalle-amyris-femme");
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/amyris_femme.png?v=20261103a"
+                    );
+                } else if (esALaRose) {
+                    tarjetaDetalle.find(".detalle-imagen-frasco").attr(
+                        "src", "images/perfumes_ficha/a_la_rose.png?v=20261103a"
+                    );
+                }
+                if (perfumeAgotado) {
+                    tarjetaDetalle.addClass("detalle-agotado");
+                    tarjetaDetalle.find(".detalle-cantidad").remove();
+                    tarjetaDetalle.find(".detalle-boton")
+                        .prop("disabled", true)
+                        .attr("aria-disabled", "true")
+                        .text("SOLD OUT");
+                }
+                $("#contenedor").empty().append(tarjetaDetalle);
+                document.body.classList.add("vista-detalle-perfume");
+                window.scrollTo({top: 0, behavior: "smooth"});
+            }
+        );
+    }//end mostrar_detalles
+
+
+    $("#perfumes").click(function(event){
+        event.preventDefault();
+        mostrar_perfumes(true);
+    })//end click perfumes
+
+    $("#identificarme").click(function(event){
+        event.preventDefault();
+        mostrar_login();
+    });
+
+    function mostrar_login(){
+        document.body.classList.remove("vista-detalle-perfume");
+        $("#contenedor").html(plantilla_login_usuario);
+
+        $("#form_login").on("submit", function(event){
+            event.preventDefault();
+
+            $.post("restUsuarios/identificarUsuario", {
+                email: $("#email").val(),
+                pass: $("#pass").val()
+            }).done(function(respuesta){
+                if (respuesta.startsWith("ok,")) {
+                    nombre_login = respuesta.split(",")[1];
+                    $("#usuarioActual").html("Bienvenido " + nombre_login);
+                    alert("Identificado correctamente. Ya puedes añadir perfumes al carrito.");
+                    mostrar_perfumes();
+                } else {
+                    alert(respuesta);
+                }
+            }).fail(function(){
+                alert("No se ha podido identificar el usuario.");
+            });
+        });
+    }
+
+    // Actualiza la cantidad desde los controles menos y más de la ficha del perfume.
+    function cambiarCantidadDetalle(cambio){
+        const campo = document.getElementById("cantidad-detalle");
+        if (!campo) return;
+
+        const cantidadActual = parseInt(campo.value, 10) || 1;
+        campo.value = Math.max(1, cantidadActual + cambio);
+    }
+
+    function agregarProductoCarrito(idPerfume, idCampoCantidad){
+        if (idsPerfumesAgotados.has(Number(idPerfume))) {
+            alert("Este perfume está agotado.");
+            return;
+        }
+
+        if (nombre_login === "") {
+            alert("Identifícate primero para añadir perfumes al carrito.");
+            return;
+        }
+
+        const campo = document.getElementById(idCampoCantidad);
+        const cantidad = campo ? parseInt(campo.value, 10) : 1;
+
+        if (!Number.isInteger(cantidad) || cantidad < 1) {
+            alert("Introduce una cantidad válida, como mínimo 1.");
+            return;
+        }
+
+        $.post("restCarrito/agregarProducto", {
+            id: idPerfume,
+            cantidad: cantidad
+        }).done(function(respuesta){
+            alert(respuesta);
+        }).fail(function(){
+            alert("No se ha podido añadir el perfume al carrito.");
+        });
+    }
+
+    $("#carrito").click(function(event){
+        event.preventDefault();
+        document.body.classList.remove("vista-detalle-perfume");
+
+        if (nombre_login === "") {
+            alert("Identifícate para consultar tu carrito.");
+            return;
+        }
+
+        $.getJSON("restCarrito/obtenerProductos")
+            .done(function(productos){
+
+                let resultadoHtml;
+
+                if (!productos || productos.length === 0) {
+                    resultadoHtml = `
+                    <div class="carrito-contenido">
+                        <div class="carrito-vacio">
+                        <h1>MI CARRITO</h1>
+                        <p>Tu carrito está vacío.</p>
+                        <a href="#" onclick="mostrar_perfumes(); return false;">
+                            VOLVER A PERFUMES
+                        </a>
+                        </div>
+                    </div>
+                `;
+                } else {
+                    resultadoHtml = Mustache.render(
+                        plantilla_carrito,
+                        productos
+                    );
+                }
+
+                $("#contenedor").html(resultadoHtml);
+                calcularTotalCarrito();
+            })
+            .fail(function(){
+                alert("No se ha podido cargar el carrito.");
+            });
+    });
+
+    function calcularTotalCarrito() {
+        let total = 0;
+
+        $(".carrito-producto").each(function() {
+            total += parseFloat($(this).attr("data-subtotal")) || 0;
+        });
+
+        const totalFormateado = total.toLocaleString("es-ES", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        $("#total-carrito").text(totalFormateado);
+        $("#carrito-subtotal-resumen").text(totalFormateado + " €");
+        let cantidadProductos = 0;
+
+        $(".carrito-producto").each(function() {
+            const cantidad = parseInt(
+                $(this).find('input[type="number"]').val(),
+                10
+            ) || 0;
+
+            cantidadProductos += cantidad;
+        });
+
+        $("#carrito-numero-productos").text(cantidadProductos);
+    }
+
+    function cambiarCantidadCarrito(idPerfume, cambio) {
+        const campo = $("#cantidad-" + idPerfume);
+        const cantidadActual = parseInt(campo.val(), 10) || 1;
+        campo.val(Math.max(1, cantidadActual + cambio));
+        actualizarCantidadCarrito(idPerfume);
+    }
+
+    function eliminarProductoCarrito(idPerfume) {
+        if (!confirm("¿Quieres eliminar este perfume del carrito?")) {
+            return;
+        }
+
+        $.get("restCarrito/eliminarProducto", {
+            idPerfume: idPerfume
+        }).done(function() {
+            $("#carrito").click();
+        }).fail(function() {
+            alert("No se ha podido eliminar el perfume.");
+        });
+    }
+
+    function actualizarCantidadCarrito(idPerfume) {
+        const cantidad = parseInt(
+            $("#cantidad-" + idPerfume).val()
+        );
+
+        if (!Number.isInteger(cantidad) || cantidad < 1) {
+            alert("Introduce una cantidad de al menos 1.");
+            return;
+        }
+
+        $.get("restCarrito/actualizarCantidad", {
+            idPerfume: idPerfume,
+            cantidad: cantidad
+        }).done(function() {
+            $("#carrito").click();
+        }).fail(function() {
+            alert("No se ha podido actualizar la cantidad.");
+        });
+    }
+
+    function vaciarCarrito() {
+        if (!confirm("¿Seguro que quieres vaciar todo el carrito?")) {
+            return;
+        }
+
+        $.get("restCarrito/vaciarCarrito")
+            .done(function() {
+                $("#carrito").click();
+            })
+            .fail(function() {
+                alert("No se ha podido vaciar el carrito.");
+            });
+    }
+
+
+    $("#contenedor").on("submit", "#formulario_registro", function(event) {
+        event.preventDefault();
+
+        $.post("restUsuarios/registrarUsuario", $(this).serialize())
+            .done(function(respuesta) {
+                alert(respuesta);
+                confetti();
+            })
+            .fail(function() {
+                alert("Error al registrar el usuario");
+            });
+    });
+
+
+    function iniciarCompra() {
+        $.get("plantillas_html/check_out_1.html?v=20261029")
+            .done(function(html) {
+                $("#contenedor").html(html);
+            })
+            .fail(function() {
+                alert("No se ha podido cargar la pantalla de compra.");
+            });
+    }
+
+    // BLOQUE PASO 1: valida y envía los datos de entrega antes de abrir el pago.
+    function mostrarPaso2() {
+        const nombre = ($("#campo_nombre").val() || "").trim();
+        const direccion = ($("#campo_direccion").val() || "").trim();
+        const provincia = ($("#campo_provincia").val() || "").trim();
+        const codigoPostal = ($("#campo_codigo_postal").val() || "").trim();
+        const localidad = ($("#campo_localidad").val() || "").trim();
+        const telefono = ($("#campo_telefono").val() || "").trim();
+        const correo = ($("#campo_correo").val() || "").trim();
+
+        if (!nombre || !direccion || !provincia || !codigoPostal || !localidad || !telefono || !correo) {
+            alert("Rellena todos los datos de envío.");
+            return;
+        }
+        if (!$("#campo_correo")[0].checkValidity()) {
+            alert("Introduce un correo electrónico válido.");
+            return;
+        }
+
+        $.post("restPedidos/procesarPaso1", {
+            nombreCompleto: nombre,
+            direccion: direccion,
+            provincia: provincia,
+            codigoPostal: codigoPostal
+        }).done(function() {
+            window.datosEnvio = { nombre, direccion, provincia, codigoPostal, localidad, telefono, correo };
+        $.get("plantillas_html/check_out_2.html?v=20261029")
+                .done(function(html) { $("#contenedor").html(html); })
+                .fail(function() { alert("Error al cargar el paso 2."); });
+        }).fail(function(xhr) {
+            alert(xhr.responseText || "No se han podido guardar los datos de envío.");
+        });
+    }
+
+    // BLOQUE PASO 2: valida tipo, número, titular y caducidad de tarjeta.
+    function mostrarPaso3() {
+        const tipo = $("#tipo_tarjeta").val();
+        const numero = ($("#numero_tarjeta").val() || "").trim();
+        const titular = ($("#titular_tarjeta").val() || "").trim();
+        const mesCaducidad = $("#mes_caducidad").val();
+        const anoCaducidad = $("#ano_caducidad").val();
+
+        if (!tipo || !numero || !titular || !mesCaducidad || !anoCaducidad) {
+            alert("Rellena todos los datos de la tarjeta.");
+            return;
+        }
+        const ahora = new Date();
+        const anoActual = ahora.getFullYear();
+        const mesActual = ahora.getMonth() + 1;
+        if (Number(anoCaducidad) < anoActual ||
+            (Number(anoCaducidad) === anoActual && Number(mesCaducidad) < mesActual)) {
+            alert("La fecha de caducidad de la tarjeta ya ha pasado.");
+            return;
+        }
+
+        $.post("restPedidos/procesarPaso2", {
+            tipoTarjeta: tipo,
+            numero: numero,
+            titular: titular
+        }).done(function() {
+            window.datosPago = { caducidad: mesCaducidad + "/" + anoCaducidad };
+            $.get("plantillas_html/check_out_3.html?v=20261029").done(function(html) {
+                $("#contenedor").html(html);
+            }).fail(function() { alert("Error al cargar la pregunta sobre el regalo."); });
+        }).fail(function(xhr) {
+            alert(xhr.responseText || "No se han podido guardar los datos de pago.");
+        });
+    }
+
+    // FORMATO DE TARJETA: añade espacios visuales; el servidor elimina esos espacios al validar.
+    function formatearNumeroTarjeta(campo) {
+        const digitos = campo.value.replace(/\D/g, "").slice(0, 19);
+        campo.value = digitos.replace(/(.{4})/g, "$1 ").trim();
+    }
+
+    // BLOQUE RESUMEN: carga los perfumes reales del carrito y la respuesta de regalo.
+    function mostrarResumenPedido() {
+        const esRegalo = $("#es_regalo").val();
+        if (esRegalo === "") {
+            alert("Indica si el pedido es para regalo.");
+            return;
+        }
+        window.esRegalo = esRegalo === "true";
+        $.getJSON("restPedidos/obtenerResumenPedido").done(function(resumen) {
+                $.get("plantillas_html/check_out_4.html?v=20261029").done(function(html) {
+                    $("#contenedor").html(html);
+                    $("#resumen_nombre").text("Nombre: " + resumen.nombreCompleto);
+                    $("#resumen_direccion").text("Dirección: " + resumen.direccion);
+                    $("#resumen_provincia").text("Provincia: " + resumen.provincia);
+                    $("#resumen_codigo_postal").text("Código postal: " + resumen.codigoPostal);
+                    const envio = window.datosEnvio || {};
+                    $("#resumen_localidad").text("Localidad: " + envio.localidad);
+                    $("#resumen_telefono").text("Teléfono: " + envio.telefono);
+                    $("#resumen_correo").text("Correo: " + envio.correo);
+                    $("#resumen_regalo").text("¿Es para regalo?: " + (window.esRegalo ? "Sí" : "No"));
+                    $("#resumen_tarjeta").text("Tarjeta: " + resumen.tipoTarjeta + " terminada en " + resumen.ultimosCuatroTarjeta);
+            let productosHtml = "";
+            // Cada fila usa el endpoint existente mostrar_imagen?id=... para traer la foto del perfume.
+            (resumen.perfumes || []).forEach(function(producto) {
+                const nombreSeguro = producto.NOMBRE || "Perfume";
+                        const cantidad = Number(producto.CANTIDAD) || 0;
+                        const subtotal = Number(producto.SUBTOTAL) || 0;
+                const linea = $("<article>", { class: "checkout-producto" });
+                const imagen = $("<img>", {
+                    src: "mostrar_imagen?id=" + encodeURIComponent(producto.ID),
+                    alt: "Imagen de " + nombreSeguro,
+                    loading: "lazy"
+                });
+                const detalle = $("<div>", { class: "checkout-producto-detalle" });
+                detalle.append($("<strong>").text(nombreSeguro));
+                detalle.append($("<span>").text("Cantidad: " + cantidad));
+                linea.append(imagen, detalle);
+                linea.append($("<strong>").text(subtotal.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €"));
+                $("#resumen_productos").append(linea);
+                    });
+            if (!resumen.perfumes || resumen.perfumes.length === 0) {
+                $("#resumen_productos").html("<p class=\"checkout-sin-productos\">No hay productos en el carrito.</p>");
+            }
+                    $("#resumen_total").text(Number(resumen.total || 0).toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+                }).fail(function() { alert("Error al cargar el resumen."); });
+        }).fail(function(xhr) {
+                alert(xhr.responseText || "No se ha podido obtener el resumen del pedido.");
+        });
+    }
+
+    function confirmarCompra() {
+        const boton = $("#boton_confirmar_pedido");
+        boton.prop("disabled", true);
+        $.post("restPedidos/confirmarPedido").done(function(respuesta) {
+            $("#contenedor").html(
+                "<div class=\"checkout\"><h2>¡Compra confirmada!</h2><p>" +
+                $("<div>").text(respuesta).html() +
+                "</p><button type=\"button\" onclick=\"mostrar_perfumes()\">VOLVER A LA TIENDA</button></div>"
+            );
+        }).fail(function(xhr) {
+            boton.prop("disabled", false);
+            alert(xhr.responseText || "No se ha podido confirmar el pedido.");
+        });
+    }
+    // En la portada la cabecera va transparente arriba y recupera el estilo al bajar.
+    function actualizarCabeceraPortada(){
+        const banner = document.querySelector(".banner-principal");
+        const bannerVisible = banner && getComputedStyle(banner).display !== "none";
+        const mostrarTransparente = bannerVisible
+            && !document.body.classList.contains("vista-detalle-perfume")
+            && window.scrollY <= 16;
+        document.body.classList.toggle("cabecera-sobre-portada", mostrarTransparente);
+    }
+
+    window.addEventListener("scroll", actualizarCabeceraPortada, {passive: true});
+    window.addEventListener("resize", actualizarCabeceraPortada);
+    new MutationObserver(actualizarCabeceraPortada).observe(
+        document.getElementById("contenedor"),
+        {childList: true, subtree: true}
+    );
+    actualizarCabeceraPortada();
+
+    // Los resultados del Scent Finder pueden abrir directamente la ficha elegida.
+    const perfumeDesdeFinder = new URLSearchParams(window.location.search).get("perfume");
+    if (perfumeDesdeFinder && /^\d+$/.test(perfumeDesdeFinder)) {
+        cargaPlantillaDetalles.done(function(){ mostrar_detalles(Number(perfumeDesdeFinder)); });
+    } else {
+        mostrar_perfumes()
+    }
+
+
+
+</script>
+
+<script src="javascript/volver-arriba.js?v=20261105"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,91 @@
+<div class="carrito-contenido">
+    <header class="carrito-encabezado">
+        <span class="carrito-numero-seccion">02</span>
+        <div>
+            <h1>MI CARRITO</h1>
+            <p>Un aroma extraordinario, un paso más cerca de ti.</p>
+        </div>
+    </header>
+
+    <div class="carrito-distribucion">
+        <section class="carrito-panel carrito-listado" aria-label="Productos del carrito">
+            <div class="carrito-tabla-cabecera" aria-hidden="true">
+                <span>PRODUCTO</span>
+                <span>PRECIO</span>
+                <span>CANTIDAD</span>
+                <span>SUBTOTAL</span>
+                <span></span>
+            </div>
+
+            {{#.}}
+            <article class="carrito-producto" data-subtotal="{{SUBTOTAL}}">
+                <div class="carrito-producto-detalle">
+                    <div class="carrito-producto-imagen">
+                        <img src="mostrar_imagen?id={{ID}}" alt="{{NOMBRE}}">
+                    </div>
+                    <div class="carrito-producto-texto">
+                        <h2>{{NOMBRE}}</h2>
+                        <p class="carrito-marca">{{MARCA}}</p>
+                        <p class="carrito-tamano">{{MILILITROS}} ml</p>
+                    </div>
+                </div>
+
+                <p class="carrito-precio"><span class="carrito-etiqueta-movil">Precio</span>{{PRECIO}} €</p>
+
+                <div class="carrito-cantidad">
+                    <span class="carrito-etiqueta-movil">Cantidad</span>
+                    <div class="carrito-control-cantidad">
+                        <button type="button" class="carrito-cantidad-cambio" aria-label="Restar una unidad" onclick="cambiarCantidadCarrito({{ID}}, -1)">−</button>
+                        <input type="number" id="cantidad-{{ID}}" value="{{CANTIDAD}}" min="1" aria-label="Cantidad de {{NOMBRE}}">
+                        <button type="button" class="carrito-cantidad-cambio" aria-label="Añadir una unidad" onclick="cambiarCantidadCarrito({{ID}}, 1)">+</button>
+                    </div>
+                    <button type="button" class="carrito-actualizar" onclick="actualizarCantidadCarrito({{ID}})">Actualizar</button>
+                </div>
+
+                <p class="carrito-subtotal"><span class="carrito-etiqueta-movil">Subtotal</span><strong>{{SUBTOTAL}} €</strong></p>
+
+                <button type="button" class="carrito-eliminar" onclick="eliminarProductoCarrito({{ID}})" aria-label="Eliminar {{NOMBRE}} del carrito">
+                    <span aria-hidden="true">♧</span> Eliminar
+                </button>
+            </article>
+            {{/.}}
+
+            <footer class="carrito-acciones-inferiores">
+                <a href="#" class="carrito-seguir-comprando" onclick="mostrar_perfumes(); return false;">
+                    <span aria-hidden="true">←</span> SEGUIR COMPRANDO
+                </a>
+                <button type="button" class="carrito-vaciar" onclick="vaciarCarrito()"><span aria-hidden="true">♧</span> VACIAR CARRITO</button>
+            </footer>
+        </section>
+
+        <aside class="carrito-columna-lateral">
+            <section class="carrito-panel carrito-resumen">
+                <h2>RESUMEN DEL PEDIDO</h2>
+                <span class="carrito-linea-dorada" aria-hidden="true"></span>
+                <div class="carrito-resumen-linea">
+                    <span>Productos (<span id="carrito-numero-productos">0</span>)</span>
+                    <span id="carrito-subtotal-resumen">0,00 €</span>
+                </div>
+                <div class="carrito-resumen-linea">
+                    <span>Envío</span>
+                    <span>Gratis</span>
+                </div>
+                <div class="carrito-resumen-total">
+                    <span>TOTAL</span>
+                    <strong><span id="total-carrito">0,00</span> €</strong>
+                </div>
+                <button type="button" class="carrito-continuar-compra" onclick="iniciarCompra()">CONTINUAR COMPRA <span aria-hidden="true">→</span></button>
+                    <li><span aria-hidden="true">♢</span><span>Pago seguro</span></li>
+                    <li><span aria-hidden="true">▱</span><span>Envío gratuito en pedidos superiores a 80 €</span></li>
+                    <li><span aria-hidden="true">◇</span><span>Devoluciones fáciles hasta 30 días</span></li>
+                </ul>
+            </section>
+
+            <section class="carrito-tarjeta-editorial" aria-label="Filosofía de TZAA JAA">
+                <p>MÁS QUE PERFUMES,<br>EXPERIENCIAS</p>
+                <span class="carrito-linea-dorada" aria-hidden="true"></span>
+                <span class="carrito-editorial-frase">Encuentra la esencia que habla de ti.</span>
+            </section>
+        </aside>
+    </div>
+</div>

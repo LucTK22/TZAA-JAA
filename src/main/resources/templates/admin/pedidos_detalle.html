@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detalle del pedido | TZAA JAA!</title>
+    <!-- Reutiliza el mismo diseño que la lista de pedidos. -->
+    <link rel="stylesheet" th:href="@{/css/pedidos.css?v=20261029c}">
+    <link rel="stylesheet" href="/css/idioma-admin.css?v=20261103">
+</head>
+<body class="admin-pedidos">
+    <div th:replace="~{fragments/admin :: selectorIdioma}"></div>
+<main class="pedidos-pagina pedido-detalle-pagina">
+    <!-- Cabecera de la ficha e identificador del pedido seleccionado. -->
+    <header class="pedidos-cabecera">
+        <div>
+            <p class="pedidos-ceja">TZAA JAA! · DETALLE DE COMPRA</p>
+            <h1>Pedido <span th:text="${pedido.id}">1</span></h1>
+            <p class="pedidos-intro" th:if="${pedido.fechaCreacion != null}" th:text="${#temporals.format(pedido.fechaCreacion, 'dd/MM/yyyy · HH:mm')}">Fecha</p>
+        </div>
+        <a class="pedidos-enlace-volver" th:href="@{/admin/gestionarPedidos}">← Volver a pedidos</a>
+    </header>
+
+    <!-- Estado actual de la compra. -->
+    <section class="pedido-estado-panel">
+        <span>Estado del pedido</span>
+        <strong class="pedido-estado" th:text="${pedido.estado}" th:classappend="${#strings.toLowerCase(pedido.estado)}">Estado</strong>
+        <label for="select-estado-pedido">Actualizar estado</label>
+        <select id="select-estado-pedido" th:attr="data-pedido-id=${pedido.id}, data-estado-actual=${pedido.estado}">
+            <option th:each="estado : ${estados}" th:value="${estado.name()}" th:text="${estado.name()}" th:selected="${estado.name() == pedido.estado}"></option>
+        </select>
+        <span id="resultado-estado-pedido" role="status" aria-live="polite"></span>
+    </section>
+
+    <!-- Datos de envío y pago en dos paneles legibles. -->
+    <div class="pedido-datos-grid">
+        <section class="pedido-datos-panel">
+            <p class="pedido-seccion-numero">01 · ENTREGA</p>
+            <h2>Datos del cliente</h2>
+            <dl class="pedido-datos-lista">
+                <div><dt>Nombre</dt><dd th:text="${pedido.nombreCompleto}">Cliente</dd></div>
+                <div><dt>Dirección</dt><dd th:text="${pedido.direccion}">Dirección</dd></div>
+                <div><dt>Provincia</dt><dd th:text="${pedido.provincia}">Provincia</dd></div>
+                <div><dt>Localidad</dt><dd th:text="${pedido.localidad != null ? pedido.localidad : 'No disponible'}">Localidad</dd></div>
+                <div><dt>Código postal</dt><dd th:text="${pedido.codigoPostal}">00000</dd></div>
+                <div><dt>Teléfono</dt><dd th:text="${pedido.telefonoContacto != null ? pedido.telefonoContacto : 'No disponible'}">Teléfono</dd></div>
+                <div><dt>Correo electrónico</dt><dd th:text="${pedido.correoContacto != null ? pedido.correoContacto : 'No disponible'}">Correo</dd></div>
+                <div><dt>¿Es un regalo?</dt><dd th:text="${pedido.esRegalo == null ? 'No disponible' : (pedido.esRegalo ? 'Sí' : 'No')}">No disponible</dd></div>
+            </dl>
+        </section>
+        <section class="pedido-datos-panel">
+            <p class="pedido-seccion-numero">02 · PAGO</p>
+            <h2>Datos de pago</h2>
+            <dl class="pedido-datos-lista">
+                <div><dt>Titular</dt><dd th:text="${pedido.titularTarjeta}">Titular</dd></div>
+                <div><dt>Tarjeta</dt><dd th:text="${pedido.tipoTarjeta}">Tipo</dd></div>
+                <div><dt>Terminada en</dt><dd th:text="${pedido.ultimosCuatroTarjeta != null ? '•••• ' + pedido.ultimosCuatroTarjeta : 'No disponible'}">•••• 0000</dd></div>
+            </dl>
+            <p class="pedido-ayuda-pago">Por seguridad, aquí solo se muestran los últimos cuatro dígitos.</p>
+        </section>
+    </div>
+
+    <!-- Productos asociados al pedido, con miniatura del perfume y cálculo de cada línea. -->
+    <section class="pedido-productos-panel">
+        <div class="pedido-productos-cabecera">
+            <div><p class="pedido-seccion-numero">03 · ARTÍCULOS</p><h2>Perfumes del pedido</h2></div>
+            <span class="pedido-conteo" th:text="${#lists.size(pedido.productosPedido)} + ' artículos'">0 artículos</span>
+        </div>
+        <article class="pedido-producto-fila" th:each="linea : ${pedido.productosPedido}">
+            <img class="pedido-producto-imagen" th:src="@{/mostrar_imagen(id=${linea.perfume.id})}" th:alt="${'Imagen de ' + linea.perfume.nombre}">
+            <div class="pedido-producto-info">
+                <h3 th:text="${linea.perfume.nombre}">Perfume</h3>
+                <p th:text="${linea.perfume.marca}">Marca</p>
+            </div>
+            <span class="pedido-producto-cantidad" th:text="${'Cantidad: ' + linea.cantidad}">Cantidad: 1</span>
+            <span class="pedido-producto-precio" th:text="${#numbers.formatDecimal(linea.subtotal, 1, 'COMMA', 2, 'POINT')} + ' €'">0,00 €</span>
+        </article>
+        <div class="pedido-productos-vacio" th:if="${#lists.isEmpty(pedido.productosPedido)}">Este pedido todavía no tiene productos confirmados.</div>
+        <div class="pedido-total" th:if="${!#lists.isEmpty(pedido.productosPedido)}">
+            <span>Total del pedido</span>
+            <strong th:text="${#numbers.formatDecimal(#aggregates.sum(pedido.productosPedido.![subtotal]), 1, 'COMMA', 2, 'POINT')} + ' €'">0,00 €</strong>
+        </div>
+    </section>
+
+    <!-- Navegación de vuelta a la tabla. -->
+    <a class="pedido-accion pedido-detalle-volver" th:href="@{/admin/gestionarPedidos}">← Volver a todos los pedidos</a>
+    <!-- Nota de versión para reconocer la plantilla actualizada. -->
+    <footer class="admin-pedidos-actualizado">Vista actualizada · 29/10/2026 · 13:05 (hora peninsular)</footer>
+</main>
+    <script>
+        (function () {
+            const selector = document.getElementById("select-estado-pedido");
+            if (!selector) return;
+            selector.addEventListener("change", async function () {
+                const resultado = document.getElementById("resultado-estado-pedido");
+                resultado.textContent = "Guardando…";
+                try {
+                    const respuesta = await fetch("/admin/restPedidos/actualizarEstadoPedido", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                        body: new URLSearchParams({ id: selector.dataset.pedidoId, estado: selector.value })
+                    });
+                    if (!respuesta.ok) throw new Error("No se pudo guardar el estado.");
+                    selector.dataset.estadoActual = selector.value;
+                    resultado.textContent = "Estado actualizado.";
+                    const etiqueta = document.querySelector(".pedido-estado-panel .pedido-estado");
+                    etiqueta.textContent = selector.value;
+                    etiqueta.className = "pedido-estado " + selector.value.toLowerCase();
+                } catch (error) {
+                    selector.value = selector.dataset.estadoActual;
+                    resultado.textContent = error.message;
+                }
+            });
+        })();
+    </script>
+    <script src="/javascript/idioma.js?v=20261103admin"></script>
+</body>
+</html>
+
