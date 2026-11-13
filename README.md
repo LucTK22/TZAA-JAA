@@ -1,27 +1,45 @@
-TIENDA PERFUMES - PROYECTO INDEPENDIENTE
+TZAA JAA! – Tienda Online de Perfumes
 
-Este proyecto ha sido creado como una copia limpia e independiente del proyecto de perfumes.
-No depende de tienda.online (3) ni comparte su carpeta src, data, .idea o target.
+Aplicación web de comercio electrónico dedicada a la venta de perfumes. Permite a los usuarios explorar el catálogo, consultar información de los productos y realizar compras de forma sencilla.
 
-Tecnologias:
+Tecnologías utilizadas
+
 - Java 27
 - Spring Boot 4.1.1
 - Maven
 - Spring Web
 - Thymeleaf
 - Spring Data JPA
-- H2
-- Validation
+- Hibernate
+- Base de datos H2
+- Jakarta Validation
+- HTML5
+- CSS3
+- JavaScript
 
-Base de datos:
-spring.datasource.url=jdbc:h2:file:./data/base_de_datos
-spring.jpa.hibernate.ddl-auto=update
+Funcionalidades principales
 
-La carpeta data pertenece EXCLUSIVAMENTE a este proyecto.
-No copiar la carpeta .idea ni target desde otro proyecto.
+- Catálogo de perfumes.
+- Consulta de detalles de cada producto.
+- Búsqueda y filtrado de productos.
+- Gestión de usuarios.
+- Carrito de compra.
+- Proceso de realización de pedidos.
+- Panel de administración.
+- Gestión de productos y pedidos.
+- Interfaz adaptada a varios idiomas.
 
-Administrador:
-contraseña: 123
+Base de datos
 
-El login de administrador redirige automaticamente a /admin/inicioAdmin al introducir 123.
+La aplicación utiliza H2 como sistema de gestión de base de datos y JPA/Hibernate para la persistencia de la información.
 
+Ejecución del proyecto
+
+1. Abrir el proyecto en IntelliJ IDEA.
+2. Esperar a que Maven descargue las dependencias.
+3. Ejecutar la clase principal `TiendaPerfumesApplication`.
+4. Acceder a la aplicación desde el navegador utilizando la dirección local indicada por Spring Boot.
+
+Autor
+
+Proyecto desarrollado como parte del ciclo formativo de Desarrollo de Aplicaciones Web (DAW).
